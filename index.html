@@ -170,14 +170,26 @@
           <p class="eyebrow" data-reveal data-t="ui.eyebrow.services"></p>
           <h2 class="section__title" data-reveal data-t="services.title"></h2>
         </header>
-        <ul class="services__grid" data-list="services.categories">
+        <div class="price-list" data-list="services.categories">
           <template>
-            <li class="service" data-reveal>
-              <span class="service__num" aria-hidden="true" data-index></span>
-              <h3 class="service__name" data-t="name"></h3>
-            </li>
+            <div class="price-cat" data-reveal>
+              <h3 class="price-cat__title" data-t="name"></h3>
+              <ul class="price-cat__items" data-list="items">
+                <template>
+                  <li class="price-item">
+                    <span class="price-item__name" data-t="name"></span>
+                    <span class="visually-hidden"> — </span>
+                    <span class="price-item__price" data-t="price"></span>
+                  </li>
+                </template>
+              </ul>
+            </div>
           </template>
-        </ul>
+        </div>
+        <!-- wrapper carries the reveal: GSAP sets inline opacity, which would override the note's 0.7 -->
+        <div data-reveal>
+          <p class="price-note" data-t="services.note"></p>
+        </div>
       </div>
     </section>
 

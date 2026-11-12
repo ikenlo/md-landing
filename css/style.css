@@ -826,53 +826,79 @@ em {
   color: var(--text-muted);
 }
 
-/* 13. SERVICES — mobile: 2 × 2
+/* 13. SERVICES — price list in a "fine dining menu" style
+   Mobile: one column of categories. Each row: name · dotted leader · price.
    ========================================================================== */
-.services__grid {
+.price-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-3);
+  gap: var(--sp-7);
 }
 
-.service {
-  position: relative;
+.price-cat__title {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  aspect-ratio: 4 / 5;
-  padding: var(--sp-4);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(90% 60% at 100% 0%, rgb(var(--gold-500-rgb) / 0.14), transparent 70%),
-    linear-gradient(160deg, var(--green-700), var(--green-800) 70%);
-  transition:
-    border-color var(--dur) var(--ease-out),
-    background-color var(--dur) var(--ease-out);
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-style: italic;
+  line-height: 1.1;
+  color: var(--gold-400);
 }
 
-.service__num {
-  font-size: var(--fs-xs);
+/* hairline that runs out to the right edge, like a menu section rule */
+.price-cat__title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.price-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-block: var(--sp-2);
+}
+
+.price-item__name {
+  display: flex;
+  align-items: baseline;
+  flex-grow: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);                /* 22px at 375 */
+  line-height: 1.25;
+  color: var(--text-light);
+}
+
+/* Dotted leader. An empty flex item has no text baseline, so its bottom
+   edge is used — the dots land exactly on the text baseline. */
+.price-item__name::after {
+  content: '';
+  flex-grow: 1;
+  min-width: 1.5rem;
+  margin: 0 8px;
+  border-bottom: 1px dotted var(--gold-400);
+  opacity: 0.55;
+}
+
+.price-item__price {
+  flex: none;
+  font-size: var(--fs-sm);
   font-weight: 600;
-  letter-spacing: var(--ls-caps);
+  letter-spacing: 0.04em;
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
   color: var(--gold-500);
 }
 
-.service__name {
-  font-size: 1.5rem;                      /* 24px — "Фарбування" fits one line at 375 */
-  line-height: 1.08;
-  overflow-wrap: break-word;
-}
-
-.service__name::before {
-  content: '';
-  display: block;
-  width: 1.5rem;
-  height: 1px;
-  margin-bottom: var(--sp-3);
-  background: var(--gold-500);
-  transform-origin: left;
-  transition: transform var(--dur-slow) var(--ease-out);
+.price-note {
+  max-width: 44ch;
+  margin-top: var(--sp-7);
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.7;
 }
 
 /* 14. GALLERY — mobile: 2 columns of squares
@@ -1425,10 +1451,6 @@ em {
     color: var(--gold-400);
   }
 
-  .service:hover {
-    border-color: rgb(var(--gold-500-rgb) / 0.6);
-  }
-
   .gallery__item:hover .gallery__img {
     transform: scale(1.06);
   }
@@ -1448,10 +1470,6 @@ em {
   .icon-btn--ring:hover {
     border-color: var(--gold-500);
     background-color: rgb(var(--gold-500-rgb) / 0.1);
-  }
-
-  .service:hover .service__name::before {
-    transform: scaleX(2);
   }
 
   .nav__link:hover {
@@ -1483,10 +1501,6 @@ em {
 
   .section {
     padding-block: var(--sp-10);
-  }
-
-  .service {
-    padding: var(--sp-5);
   }
 
   .contacts__cta {
@@ -1527,10 +1541,6 @@ em {
 
   .modal__title {
     font-size: var(--fs-2xl);
-  }
-
-  .service__name {
-    font-size: var(--fs-lg);
   }
 
   .monogram {
@@ -1640,10 +1650,20 @@ em {
     margin-bottom: var(--sp-3);
   }
 
-  /* Services: four columns */
-  .services__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--sp-5);
+  /* Services: categories flow into two menu columns */
+  .price-list {
+    display: block;
+    columns: 2;
+    column-gap: var(--sp-9);
+  }
+
+  .price-cat {
+    break-inside: avoid;
+    margin-bottom: var(--sp-7);
+  }
+
+  .price-note {
+    margin-top: var(--sp-3);
   }
 
   /* Gallery: three columns */
