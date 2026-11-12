@@ -1,0 +1,836 @@
+/* ==========================================================================
+   M&D — Beauty Salon
+   Mobile-first: base styles target 375px. Desktop lives in min-width queries.
+   --------------------------------------------------------------------------
+   1. Tokens
+   2. Reset
+   3. Base & typography
+   4. Layout primitives
+   5. Buttons
+   6. Preloader
+   7. Navigation
+   8. Mobile menu
+   9. Hero
+   10. Section shells
+   11. Desktop enhancements
+   12. Reduced motion
+   ========================================================================== */
+
+/* 1. TOKENS
+   ========================================================================== */
+:root {
+  /* Colour — exact brand palette */
+  --green-900: #051C15;
+  --green-800: #0A2A20;
+  --green-700: #113A2E;
+  --gold-500: #C8A97E;
+  --gold-400: #D9BD96;
+  --neutral-100: #F4EFE6;
+
+  /* Channel triplets for translucent surfaces */
+  --green-900-rgb: 5 28 21;
+  --green-800-rgb: 10 42 32;
+  --gold-500-rgb: 200 169 126;
+  --neutral-100-rgb: 244 239 230;
+
+  /* Semantic colour */
+  --bg: var(--green-900);
+  --bg-alt: var(--green-800);
+  --surface: var(--green-700);
+  --text: var(--neutral-100);
+  --text-muted: rgb(var(--neutral-100-rgb) / 0.68);
+  --accent: var(--gold-500);
+  --accent-hover: var(--gold-400);
+  --line: rgb(var(--gold-500-rgb) / 0.22);
+
+  /* Type families */
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Type scale — fluid from 375px to 1440px */
+  --fs-xs: 0.75rem;                                   /* 12 */
+  --fs-sm: 0.875rem;                                  /* 14 */
+  --fs-base: 1rem;                                    /* 16 */
+  --fs-md: clamp(1.0625rem, 1.02rem + 0.19vw, 1.1875rem);   /* 17 → 19 */
+  --fs-lg: clamp(1.375rem, 1.24rem + 0.56vw, 1.75rem);      /* 22 → 28 */
+  --fs-xl: clamp(1.75rem, 1.49rem + 1.13vw, 2.5rem);        /* 28 → 40 */
+  --fs-2xl: clamp(2.25rem, 1.72rem + 2.25vw, 3.75rem);      /* 36 → 60 */
+  --fs-3xl: clamp(2.75rem, 1.87rem + 3.76vw, 5.25rem);      /* 44 → 84 */
+  --fs-display: clamp(3.25rem, 1.84rem + 6.01vw, 7.25rem);  /* 52 → 116 */
+
+  --lh-tight: 1.02;
+  --lh-snug: 1.2;
+  --lh-body: 1.65;
+
+  --ls-display: -0.015em;
+  --ls-caps: 0.22em;
+
+  /* Spacing — 4px base */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 8rem;
+
+  /* Layout */
+  --gutter: 1.25rem;        /* 20px side padding at 375 */
+  --container: 76rem;
+  --nav-h: 4.5rem;          /* 72px */
+  --nav-h-scrolled: 4rem;   /* 64px */
+  --tap: 3rem;              /* 48px minimum tap target */
+
+  /* Shape */
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 0.2s;
+  --dur: 0.4s;
+  --dur-slow: 0.7s;
+
+  /* Stacking */
+  --z-menu: 90;
+  --z-nav: 100;
+  --z-skip: 200;
+  --z-preloader: 1000;
+}
+
+/* 2. RESET
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;                 /* fallback when Lenis is absent */
+  scroll-padding-top: var(--nav-h-scrolled);
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: inherit;
+  font-size: inherit;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-400);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--gold-500);
+  color: var(--green-900);
+}
+
+/* Lenis — required companion styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Scroll lock (preloader, open menu) */
+html.is-locked,
+html.is-locked body {
+  overflow: hidden;
+}
+
+/* 3. BASE & TYPOGRAPHY
+   ========================================================================== */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-display);
+}
+
+h1 { font-size: var(--fs-display); }
+h2 { font-size: var(--fs-3xl); }
+h3 { font-size: var(--fs-xl); line-height: var(--lh-snug); }
+
+em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--sp-2);
+  left: var(--sp-2);
+  z-index: var(--z-skip);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--sp-4);
+  background: var(--gold-500);
+  color: var(--green-900);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* 4. LAYOUT PRIMITIVES
+   ========================================================================== */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+}
+
+/* Line-reveal mask for headings */
+.line {
+  display: block;
+  overflow: hidden;
+  /* room for descenders / italic overhang inside the mask */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.line__inner {
+  display: block;
+  will-change: transform;
+}
+
+/* 5. BUTTONS
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;                   /* 52px — above the 48px floor */
+  padding: 0 var(--sp-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--gold {
+  background: var(--gold-500);
+  color: var(--green-900);
+}
+
+.btn--ghost {
+  border-color: rgb(var(--gold-500-rgb) / 0.5);
+  color: var(--neutral-100);
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+  min-height: 3.5rem;                    /* 56px */
+}
+
+/* 6. PRELOADER
+   ========================================================================== */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  display: grid;
+  place-items: center;
+  background: var(--green-900);
+  /* Last-resort failsafe: if scripts never run, get out of the way */
+  animation: preloader-failsafe 0.4s linear 6s forwards;
+}
+
+.preloader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur) linear, visibility 0s linear var(--dur);
+}
+
+@keyframes preloader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.preloader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+}
+
+.monogram {
+  width: 8.5rem;                          /* 136px */
+  height: 8.5rem;
+  overflow: visible;
+}
+
+/* pathLength="1" normalises every shape, so one dash = the whole stroke.
+   Offset 1 hides it; animating to 0 draws it. */
+.monogram__ring,
+.monogram__letter,
+.monogram__amp {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.monogram__ring {
+  stroke: rgb(var(--gold-500-rgb) / 0.45);
+  stroke-width: 1;
+}
+
+.monogram__letter {
+  stroke: var(--neutral-100);
+  stroke-width: 1.5;
+}
+
+.monogram__amp {
+  stroke: var(--gold-500);
+  stroke-width: 1.25;
+}
+
+.preloader__caption {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;                     /* optically re-centre tracked text */
+  text-transform: uppercase;
+  color: var(--gold-500);
+  opacity: 0;
+}
+
+/* 7. NAVIGATION
+   ========================================================================== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  padding-top: env(safe-area-inset-top);
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    -webkit-backdrop-filter var(--dur) var(--ease-out),
+    backdrop-filter var(--dur) var(--ease-out);
+}
+
+/* Scrolled past 80px: solid --green-800 with blur */
+.nav.is-scrolled {
+  background-color: rgb(var(--green-800-rgb) / 0.82);
+  border-bottom-color: var(--line);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* No backdrop-filter support → opaque bar keeps text legible */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .nav.is-scrolled {
+    background-color: var(--green-800);
+  }
+}
+
+/* While the menu is open the bar melts into the overlay */
+.nav.is-menu-open {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-h);
+  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(calc(var(--gutter) - 0.75rem), env(safe-area-inset-right));
+  transition: height var(--dur) var(--ease-out);
+}
+
+.nav.is-scrolled .nav__inner {
+  height: var(--nav-h-scrolled);
+}
+
+.nav__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  min-width: var(--tap);
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--neutral-100);
+}
+
+.nav__logo-amp {
+  margin-inline: 0.06em;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold-500);
+}
+
+/* Desktop-only pieces are hidden on mobile */
+.nav__links,
+.nav__cta {
+  display: none;
+}
+
+/* Burger — 48×48 hit area, two hairlines that cross into an X */
+.nav__burger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  flex: none;
+  border-radius: 50%;
+  touch-action: manipulation;
+}
+
+.nav__burger-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.5rem;
+  height: 1.5px;
+  margin-left: -0.75rem;
+  background: var(--neutral-100);
+  transition:
+    transform var(--dur) var(--ease-in-out),
+    background-color var(--dur) var(--ease-out);
+}
+
+.nav__burger-line:nth-child(1) { transform: translateY(-4px); }
+.nav__burger-line:nth-child(2) { transform: translateY(4px); }
+
+.nav__burger[aria-expanded="true"] .nav__burger-line {
+  background: var(--gold-500);
+}
+
+.nav__burger[aria-expanded="true"] .nav__burger-line:nth-child(1) { transform: rotate(45deg); }
+.nav__burger[aria-expanded="true"] .nav__burger-line:nth-child(2) { transform: rotate(-45deg); }
+
+/* 8. MOBILE MENU
+   ========================================================================== */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: calc(var(--nav-h) + env(safe-area-inset-top));
+  background:
+    radial-gradient(120% 60% at 50% 110%, rgb(var(--gold-500-rgb) / 0.10), transparent 60%),
+    var(--green-900);
+  visibility: hidden;
+}
+
+.menu.is-open {
+  visibility: visible;
+}
+
+/* Links: centred in the space above the CTA; scrolls on very short screens */
+.menu__nav {
+  display: flex;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--sp-4) var(--gutter);
+}
+
+.menu__list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  width: 100%;
+  margin: auto;                           /* centres, yet stays scrollable on overflow */
+}
+
+.menu__item {
+  width: 100%;
+}
+
+.menu__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4rem;                       /* 64px tap row */
+  overflow: hidden;                       /* mask for the reveal */
+  font-family: var(--font-display);
+  font-size: 2.375rem;                    /* 38px */
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: var(--ls-display);
+  color: var(--neutral-100);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.menu__link:active,
+.menu__link[aria-current="true"] {
+  color: var(--gold-400);
+}
+
+.menu__link-inner {
+  display: block;
+  padding-block: 0.08em;
+}
+
+/* CTA pinned to the bottom thumb-zone */
+.menu__footer {
+  padding: var(--sp-4) var(--gutter) calc(var(--sp-5) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+
+/* 9. HERO
+   ========================================================================== */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: calc(var(--nav-h) + var(--sp-6));
+  padding-bottom: var(--sp-9);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Placeholder atmosphere until photography lands */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(90% 55% at 85% 12%, rgb(var(--gold-500-rgb) / 0.20), transparent 62%),
+    radial-gradient(110% 70% at 0% 100%, var(--green-700), transparent 70%),
+    linear-gradient(180deg, var(--green-800) 0%, var(--green-900) 100%);
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-5);
+}
+
+.hero__title {
+  font-size: var(--fs-display);
+}
+
+.hero__lead {
+  max-width: 32ch;
+  font-size: var(--fs-md);
+  color: var(--text-muted);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  width: 100%;
+  margin-top: var(--sp-2);
+}
+
+.hero__actions .btn {
+  flex: 1 1 8.5rem;
+}
+
+.hero__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: var(--sp-4);
+  width: 1px;
+  height: 2.5rem;
+  overflow: hidden;
+}
+
+.hero__scroll-line {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--gold-500);
+  animation: scroll-hint 2.2s var(--ease-in-out) infinite;
+}
+
+@keyframes scroll-hint {
+  0% { transform: translateY(-100%); }
+  55% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+/* 10. SECTION SHELLS
+   ========================================================================== */
+.section {
+  display: flex;
+  align-items: center;
+  min-height: 80vh;
+  min-height: 80svh;
+  padding-block: var(--sp-9);
+  background: var(--bg);
+}
+
+.section--alt {
+  background: var(--bg-alt);
+}
+
+.section__title {
+  margin-top: var(--sp-3);
+}
+
+/* 11. DESKTOP ENHANCEMENTS
+   ========================================================================== */
+
+/* Hover only where a real pointer exists — no sticky hovers on touch */
+@media (hover: hover) and (pointer: fine) {
+  .btn--gold:hover {
+    background: var(--gold-400);
+  }
+
+  .btn--ghost:hover {
+    border-color: var(--gold-500);
+    color: var(--gold-400);
+  }
+
+  .menu__link:hover {
+    color: var(--gold-400);
+  }
+
+  .nav__link:hover {
+    color: var(--neutral-100);
+  }
+
+  .nav__link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: 2.5rem;
+  }
+
+  .hero__actions {
+    width: auto;
+  }
+
+  .hero__actions .btn {
+    flex: none;
+  }
+
+  .hero__lead {
+    max-width: 44ch;
+  }
+
+  .monogram {
+    width: 10rem;
+    height: 10rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: 4rem;
+    --nav-h: 5.5rem;
+    --nav-h-scrolled: 4.5rem;
+  }
+
+  .nav__inner {
+    max-width: calc(var(--container) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    gap: var(--sp-6);
+  }
+
+  .nav__burger,
+  .menu {
+    display: none;
+  }
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-left: auto;
+  }
+
+  .nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-inline: var(--sp-4);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: rgb(var(--neutral-100-rgb) / 0.8);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: var(--sp-4);
+    right: var(--sp-4);
+    bottom: 0.7rem;
+    height: 1px;
+    background: var(--gold-500);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .nav__cta {
+    display: inline-flex;
+    min-height: var(--tap);
+    padding-inline: var(--sp-5);
+  }
+
+  .hero {
+    align-items: center;
+    padding-bottom: var(--sp-8);
+  }
+}
+
+/* 12. REDUCED MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .hero__scroll-line {
+    animation: none;
+  }
+}

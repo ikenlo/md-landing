@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>M&amp;D — салон краси</title>
+  <meta name="description" content="M&amp;D — салон краси преміум-класу. Волосся, нігті, догляд за обличчям і тілом.">
+  <meta name="theme-color" content="#051C15">
+
+  <!-- Marks the document as JS-capable before first paint -->
+  <script>document.documentElement.classList.add('js');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Without JS nothing can dismiss the preloader, so never show it -->
+  <noscript><style>.preloader { display: none; }</style></noscript>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Перейти до змісту</a>
+
+  <!-- ============ PRELOADER ============ -->
+  <div class="preloader" id="preloader" role="status" aria-label="Завантаження">
+    <div class="preloader__inner">
+      <svg class="monogram" viewBox="0 0 200 200" fill="none" aria-hidden="true" focusable="false">
+        <circle class="monogram__ring" cx="100" cy="100" r="94" pathLength="1" transform="rotate(-90 100 100)"/>
+        <path class="monogram__letter" pathLength="1" d="M30 134 V66 L56 110 L82 66 V134"/>
+        <path class="monogram__amp" pathLength="1" transform="translate(2.5 0)" d="M112 118 L96.5 96.5 C92.5 91 94.5 84 100 84 C105.5 84 107 90.5 102.5 94 L95 99.5 C87.5 105 89 116.5 98.5 117.5 C105 118 109.5 112.5 111 104.5"/>
+        <path class="monogram__letter" pathLength="1" d="M124 66 V134 H138 C159 134 172 120 172 100 C172 80 159 66 138 66 H124"/>
+      </svg>
+      <p class="preloader__caption">Салон краси</p>
+    </div>
+  </div>
+
+  <!-- ============ NAVIGATION ============ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="#top" aria-label="M&amp;D — на початок сторінки">
+        M<span class="nav__logo-amp">&amp;</span>D
+      </a>
+
+      <!-- Desktop enhancement: inline links + CTA -->
+      <nav class="nav__links" aria-label="Основна навігація">
+        <a class="nav__link" href="#services">Послуги</a>
+        <a class="nav__link" href="#about">Про нас</a>
+        <a class="nav__link" href="#masters">Майстри</a>
+        <a class="nav__link" href="#gallery">Галерея</a>
+        <a class="nav__link" href="#contacts">Контакти</a>
+      </nav>
+      <a class="btn btn--gold nav__cta" href="#booking">Записатися</a>
+
+      <button class="nav__burger" id="navBurger" type="button"
+              aria-expanded="false" aria-controls="menu" aria-label="Відкрити меню">
+        <span class="nav__burger-line"></span>
+        <span class="nav__burger-line"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ MOBILE MENU ============
+       Lives outside <header>: backdrop-filter on the nav would otherwise
+       become the containing block for this fixed overlay. -->
+  <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Меню" inert>
+    <nav class="menu__nav" aria-label="Мобільна навігація">
+      <ul class="menu__list">
+        <li class="menu__item"><a class="menu__link" href="#services"><span class="menu__link-inner">Послуги</span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#about"><span class="menu__link-inner">Про нас</span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#masters"><span class="menu__link-inner">Майстри</span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#gallery"><span class="menu__link-inner">Галерея</span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#contacts"><span class="menu__link-inner">Контакти</span></a></li>
+      </ul>
+    </nav>
+    <div class="menu__footer">
+      <a class="btn btn--gold btn--block menu__cta" href="#booking">Записатися</a>
+    </div>
+  </div>
+
+  <!-- ============ CONTENT ============ -->
+  <main id="main">
+
+    <section class="hero" id="top">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="hero__content container">
+        <p class="eyebrow" data-hero-fade>Салон краси</p>
+        <h1 class="hero__title">
+          <span class="line"><span class="line__inner">Краса,</span></span>
+          <span class="line"><span class="line__inner">що має <em>характер</em></span></span>
+        </h1>
+        <p class="hero__lead" data-hero-fade>
+          Простір, де час сповільнюється. Волосся, нігті та догляд — у руках майстрів, які чують вас.
+        </p>
+        <div class="hero__actions" data-hero-fade>
+          <a class="btn btn--gold" href="#booking">Записатися</a>
+          <a class="btn btn--ghost" href="#services">Послуги</a>
+        </div>
+      </div>
+      <div class="hero__scroll" aria-hidden="true" data-hero-fade>
+        <span class="hero__scroll-line"></span>
+      </div>
+    </section>
+
+    <!-- Section shells: anchors for the nav. Content arrives in the next stages. -->
+    <section class="section" id="services">
+      <div class="container">
+        <p class="eyebrow">01</p>
+        <h2 class="section__title">Послуги</h2>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="about">
+      <div class="container">
+        <p class="eyebrow">02</p>
+        <h2 class="section__title">Про нас</h2>
+      </div>
+    </section>
+
+    <section class="section" id="masters">
+      <div class="container">
+        <p class="eyebrow">03</p>
+        <h2 class="section__title">Майстри</h2>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="gallery">
+      <div class="container">
+        <p class="eyebrow">04</p>
+        <h2 class="section__title">Галерея</h2>
+      </div>
+    </section>
+
+    <section class="section" id="booking">
+      <div class="container">
+        <p class="eyebrow">05</p>
+        <h2 class="section__title">Запис</h2>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="contacts">
+      <div class="container">
+        <p class="eyebrow">06</p>
+        <h2 class="section__title">Контакти</h2>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+  <script defer src="js/animations.js"></script>
+  <script defer src="js/main.js"></script>
+</body>
+</html>
