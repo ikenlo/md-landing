@@ -1,7 +1,8 @@
 /* ==========================================================================
    M&D — main.js
-   App logic: smooth scroll, preloader boot, sticky nav state, mobile menu.
-   Timelines come from animations.js (window.MD.animations).
+   App logic: content binding, smooth scroll, preloader boot, sticky nav
+   state, mobile menu. Copy comes from content.js (window.MD.content),
+   timelines from animations.js (window.MD.animations).
    ========================================================================== */
 (function () {
   'use strict';
@@ -10,12 +11,81 @@
   var DESKTOP = window.matchMedia('(min-width: 64rem)');
 
   var anim = (window.MD && window.MD.animations) || { available: false };
+  var content = (window.MD && window.MD.content) || {};
   var root = document.documentElement;
   var nav = document.getElementById('nav');
   var burger = document.getElementById('navBurger');
   var menu = document.getElementById('menu');
   var main = document.getElementById('main');
   var lenis = null;
+
+  /* ---------- Content binding (content.js → DOM) ---------- */
+  function lookup(ctx, path) {
+    if (path === '.') return ctx;
+    return path.split('.').reduce(function (obj, key) {
+      return obj == null ? undefined : obj[key];
+    }, ctx);
+  }
+
+  // Plain text, except *word* becomes <em>word</em>. Built with DOM nodes — no innerHTML.
+  function setText(el, value) {
+    el.textContent = '';
+    String(value).split(/\*(.+?)\*/g).forEach(function (part, i) {
+      if (!part) return;
+      if (i % 2) {
+        var em = document.createElement('em');
+        em.textContent = part;
+        el.appendChild(em);
+      } else {
+        el.appendChild(document.createTextNode(part));
+      }
+    });
+  }
+
+  function bind(scope, ctx, index) {
+    scope.querySelectorAll('[data-t]').forEach(function (el) {
+      var value = lookup(ctx, el.getAttribute('data-t'));
+      if (value == null) console.warn('[content] missing key:', el.getAttribute('data-t'));
+      else setText(el, value);
+      el.removeAttribute('data-t');
+    });
+
+    scope.querySelectorAll('[data-t-attr]').forEach(function (el) {
+      el.getAttribute('data-t-attr').split(';').forEach(function (pair) {
+        var at = pair.indexOf(':');
+        var value = lookup(ctx, pair.slice(at + 1).trim());
+        if (value == null) console.warn('[content] missing key:', pair);
+        else el.setAttribute(pair.slice(0, at).trim(), value);
+      });
+      el.removeAttribute('data-t-attr');
+    });
+
+    if (index != null) {
+      scope.querySelectorAll('[data-index]').forEach(function (el) {
+        el.textContent = (index < 9 ? '0' : '') + (index + 1);
+      });
+    }
+  }
+
+  function renderContent() {
+    // Lists first: stamp the <template> once per item, bound to that item…
+    document.querySelectorAll('[data-list]').forEach(function (list) {
+      var items = lookup(content, list.getAttribute('data-list'));
+      var tpl = list.querySelector('template');
+      if (!tpl || !Array.isArray(items)) {
+        console.warn('[content] bad list:', list.getAttribute('data-list'));
+        return;
+      }
+      items.forEach(function (item, i) {
+        var node = tpl.content.cloneNode(true);
+        bind(node, item, i);
+        list.appendChild(node);
+      });
+    });
+
+    // …then everything else against the root.
+    bind(document, content);
+  }
 
   /* ---------- Scroll lock ---------- */
   function lockScroll() {
@@ -70,7 +140,8 @@
   function setMenuState(open) {
     menuOpen = open;
     burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Закрити меню' : 'Відкрити меню');
+    var labels = content.a11y || {};
+    burger.setAttribute('aria-label', open ? labels.menuClose : labels.menuOpen);
     nav.classList.toggle('is-menu-open', open);
     main.inert = open;                            // focus stays in header + menu
   }
@@ -160,6 +231,7 @@
 
   /* ---------- Boot ---------- */
   function boot() {
+    renderContent();                              // before anything measures or animates
     initLenis();
     initNavScroll();
     initMenu();
@@ -175,10 +247,17 @@
 
     lockScroll();
     anim.prepareHero();
+    anim.scrollReveals();
     anim.preloader(function () {
       unlockScroll();
+      anim.heroBreathing();
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     });
+
+    // Web fonts change text height → trigger positions need one re-measure.
+    if (document.fonts && document.fonts.ready && window.ScrollTrigger) {
+      document.fonts.ready.then(function () { window.ScrollTrigger.refresh(); });
+    }
   }
 
   if (document.readyState === 'loading') {

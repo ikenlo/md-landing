@@ -16,24 +16,88 @@
     gsap.registerPlugin(window.ScrollTrigger);
   }
 
-  /* ---------- Hero intro ---------------------------------------------------
+  if (available && window.ScrollTrigger) {
+    // Address-bar show/hide on phones resizes 100dvh; don't re-measure on every one.
+    window.ScrollTrigger.config({ ignoreMobileResize: true });
+  }
+
+  /* ---------- Hero ---------------------------------------------------------
      Initial states are set immediately (the preloader is covering the page),
      so there is no flash of un-animated content when the curtain lifts. */
   function prepareHero() {
     if (!available || reducedMotion) return;
-    gsap.set('.hero__title .line__inner', { yPercent: 115 });
-    gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 24 });
+    gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 32 });
     gsap.set('#nav', { autoAlpha: 0, y: -16 });
   }
 
+  // Staggered fade-up: eyebrow → logo → subhead → CTA → scroll hint
   function heroIntro() {
     var tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
     if (reducedMotion) return tl;
 
-    tl.to('.hero__title .line__inner', { yPercent: 0, duration: 1.2, stagger: 0.12 })
-      .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.1 }, 0.25)
-      .to('#nav', { autoAlpha: 1, y: 0, duration: 0.8, clearProps: 'transform' }, 0.35);
+    tl.to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1.2, stagger: 0.14 })
+      .to('#nav', { autoAlpha: 1, y: 0, duration: 0.8, clearProps: 'transform' }, 0.3);
     return tl;
+  }
+
+  // Slow "breathing" scale on the hero image; sleeps while the hero is off-screen.
+  function heroBreathing() {
+    var img = document.querySelector('.hero__img');
+    if (!img || reducedMotion) return;
+
+    var breathe = gsap.fromTo(img,
+      { scale: 1 },
+      { scale: 1.07, duration: 9, ease: 'sine.inOut', repeat: -1, yoyo: true });
+
+    if (window.ScrollTrigger) {
+      window.ScrollTrigger.create({
+        trigger: '.hero',
+        start: 'top bottom',
+        end: 'bottom top',
+        onToggle: function (self) {
+          if (self.isActive) breathe.play(); else breathe.pause();
+        }
+      });
+    }
+  }
+
+  /* ---------- Scroll reveals -----------------------------------------------
+     Every [data-reveal] fades up as it enters. batch() groups elements that
+     cross the line together, so a desktop row staggers left→right while a
+     mobile stack reveals one by one as you scroll. */
+  function scrollReveals() {
+    if (reducedMotion || !window.ScrollTrigger) return;
+
+    gsap.set('[data-reveal]', { autoAlpha: 0, y: 40 });
+
+    window.ScrollTrigger.batch('[data-reveal]', {
+      start: 'top 88%',
+      once: true,
+      onEnter: function (batch) {
+        gsap.to(batch, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 1.1,
+          ease: 'expo.out',
+          stagger: 0.12,
+          overwrite: true
+        });
+      }
+    });
+
+    // Gentle drift of an image inside its frame while it crosses the viewport
+    gsap.utils.toArray('[data-parallax]').forEach(function (img) {
+      gsap.fromTo(img, { yPercent: -5 }, {
+        yPercent: 5,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: img.parentNode,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
+        }
+      });
+    });
   }
 
   /* ---------- Preloader ----------------------------------------------------
@@ -111,6 +175,8 @@
     reducedMotion: reducedMotion,
     prepareHero: prepareHero,
     preloader: preloader,
-    menu: menu
+    menu: menu,
+    heroBreathing: heroBreathing,
+    scrollReveals: scrollReveals
   };
 })();

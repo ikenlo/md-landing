@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>M&amp;D — салон краси</title>
-  <meta name="description" content="M&amp;D — салон краси преміум-класу. Волосся, нігті, догляд за обличчям і тілом.">
+  <!-- Head copy stays static: link-preview scrapers don't run JS (see js/content.js) -->
+  <title>M&amp;D — студія краси, Нові Петрівці</title>
+  <meta name="description" content="M&amp;D — студія краси в Нових Петрівцях. Стрижки, фарбування, догляд за волоссям і дитячі стрижки.">
   <meta name="theme-color" content="#051C15">
 
   <!-- Marks the document as JS-capable before first paint -->
@@ -21,10 +22,12 @@
 </head>
 <body>
 
-  <a class="skip-link" href="#main">Перейти до змісту</a>
+  <!-- All visible copy is injected from js/content.js via data-t / data-list -->
+
+  <a class="skip-link" href="#main" data-t="a11y.skip"></a>
 
   <!-- ============ PRELOADER ============ -->
-  <div class="preloader" id="preloader" role="status" aria-label="Завантаження">
+  <div class="preloader" id="preloader" role="status" data-t-attr="aria-label:a11y.loading">
     <div class="preloader__inner">
       <svg class="monogram" viewBox="0 0 200 200" fill="none" aria-hidden="true" focusable="false">
         <circle class="monogram__ring" cx="100" cy="100" r="94" pathLength="1" transform="rotate(-90 100 100)"/>
@@ -32,29 +35,27 @@
         <path class="monogram__amp" pathLength="1" transform="translate(2.5 0)" d="M112 118 L96.5 96.5 C92.5 91 94.5 84 100 84 C105.5 84 107 90.5 102.5 94 L95 99.5 C87.5 105 89 116.5 98.5 117.5 C105 118 109.5 112.5 111 104.5"/>
         <path class="monogram__letter" pathLength="1" d="M124 66 V134 H138 C159 134 172 120 172 100 C172 80 159 66 138 66 H124"/>
       </svg>
-      <p class="preloader__caption">Салон краси</p>
+      <p class="preloader__caption" data-t="brand.tagline"></p>
     </div>
   </div>
 
   <!-- ============ NAVIGATION ============ -->
   <header class="nav" id="nav">
     <div class="nav__inner">
-      <a class="nav__logo" href="#top" aria-label="M&amp;D — на початок сторінки">
+      <a class="nav__logo" href="#top" data-t-attr="aria-label:a11y.logo">
         M<span class="nav__logo-amp">&amp;</span>D
       </a>
 
       <!-- Desktop enhancement: inline links + CTA -->
-      <nav class="nav__links" aria-label="Основна навігація">
-        <a class="nav__link" href="#services">Послуги</a>
-        <a class="nav__link" href="#about">Про нас</a>
-        <a class="nav__link" href="#masters">Майстри</a>
-        <a class="nav__link" href="#gallery">Галерея</a>
-        <a class="nav__link" href="#contacts">Контакти</a>
+      <nav class="nav__links" data-list="nav.links" data-t-attr="aria-label:a11y.navMain">
+        <template>
+          <a class="nav__link" data-t="label" data-t-attr="href:href"></a>
+        </template>
       </nav>
-      <a class="btn btn--gold nav__cta" href="#booking">Записатися</a>
+      <a class="btn btn--gold nav__cta" href="#booking" data-t="nav.cta"></a>
 
       <button class="nav__burger" id="navBurger" type="button"
-              aria-expanded="false" aria-controls="menu" aria-label="Відкрити меню">
+              aria-expanded="false" aria-controls="menu" data-t-attr="aria-label:a11y.menuOpen">
         <span class="nav__burger-line"></span>
         <span class="nav__burger-line"></span>
       </button>
@@ -64,85 +65,115 @@
   <!-- ============ MOBILE MENU ============
        Lives outside <header>: backdrop-filter on the nav would otherwise
        become the containing block for this fixed overlay. -->
-  <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Меню" inert>
-    <nav class="menu__nav" aria-label="Мобільна навігація">
-      <ul class="menu__list">
-        <li class="menu__item"><a class="menu__link" href="#services"><span class="menu__link-inner">Послуги</span></a></li>
-        <li class="menu__item"><a class="menu__link" href="#about"><span class="menu__link-inner">Про нас</span></a></li>
-        <li class="menu__item"><a class="menu__link" href="#masters"><span class="menu__link-inner">Майстри</span></a></li>
-        <li class="menu__item"><a class="menu__link" href="#gallery"><span class="menu__link-inner">Галерея</span></a></li>
-        <li class="menu__item"><a class="menu__link" href="#contacts"><span class="menu__link-inner">Контакти</span></a></li>
+  <div class="menu" id="menu" role="dialog" aria-modal="true" data-t-attr="aria-label:a11y.menu" inert>
+    <nav class="menu__nav" data-t-attr="aria-label:a11y.navMobile">
+      <ul class="menu__list" data-list="nav.links">
+        <template>
+          <li class="menu__item">
+            <a class="menu__link" data-t-attr="href:href"><span class="menu__link-inner" data-t="label"></span></a>
+          </li>
+        </template>
       </ul>
     </nav>
     <div class="menu__footer">
-      <a class="btn btn--gold btn--block menu__cta" href="#booking">Записатися</a>
+      <a class="btn btn--gold btn--block menu__cta" href="#booking" data-t="nav.cta"></a>
     </div>
   </div>
 
   <!-- ============ CONTENT ============ -->
   <main id="main">
 
+    <!-- HERO -->
     <section class="hero" id="top">
-      <div class="hero__bg" aria-hidden="true"></div>
-      <div class="hero__content container">
-        <p class="eyebrow" data-hero-fade>Салон краси</p>
-        <h1 class="hero__title">
-          <span class="line"><span class="line__inner">Краса,</span></span>
-          <span class="line"><span class="line__inner">що має <em>характер</em></span></span>
-        </h1>
-        <p class="hero__lead" data-hero-fade>
-          Простір, де час сповільнюється. Волосся, нігті та догляд — у руках майстрів, які чують вас.
-        </p>
-        <div class="hero__actions" data-hero-fade>
-          <a class="btn btn--gold" href="#booking">Записатися</a>
-          <a class="btn btn--ghost" href="#services">Послуги</a>
-        </div>
+      <div class="hero__media" aria-hidden="true">
+        <picture>
+          <source media="(min-width: 48rem)" srcset="assets/img/hero-desktop.jpg" width="1920" height="1200">
+          <img class="hero__img" src="assets/img/hero-mobile.jpg" alt="" width="900" height="1600"
+               fetchpriority="high" decoding="async">
+        </picture>
+        <div class="hero__overlay"></div>
       </div>
+
+      <div class="hero__content container">
+        <p class="eyebrow" data-hero-fade data-t="hero.eyebrow"></p>
+        <h1 class="hero__title" data-hero-fade>
+          <span class="visually-hidden" data-t="hero.title"></span>
+          <svg class="hero__logo" viewBox="24 60 154 80" fill="none" aria-hidden="true" focusable="false">
+            <path class="hero__logo-letter" d="M30 134 V66 L56 110 L82 66 V134"/>
+            <path class="hero__logo-amp" transform="translate(2.5 0)" d="M112 118 L96.5 96.5 C92.5 91 94.5 84 100 84 C105.5 84 107 90.5 102.5 94 L95 99.5 C87.5 105 89 116.5 98.5 117.5 C105 118 109.5 112.5 111 104.5"/>
+            <path class="hero__logo-letter" d="M124 66 V134 H138 C159 134 172 120 172 100 C172 80 159 66 138 66 H124"/>
+          </svg>
+        </h1>
+        <p class="hero__subhead" data-hero-fade data-t="hero.subhead"></p>
+        <a class="btn btn--gold hero__cta" href="#booking" data-hero-fade data-t="hero.cta"></a>
+      </div>
+
       <div class="hero__scroll" aria-hidden="true" data-hero-fade>
         <span class="hero__scroll-line"></span>
       </div>
     </section>
 
-    <!-- Section shells: anchors for the nav. Content arrives in the next stages. -->
-    <section class="section" id="services">
-      <div class="container">
-        <p class="eyebrow">01</p>
-        <h2 class="section__title">Послуги</h2>
+    <!-- ABOUT -->
+    <section class="section about" id="about">
+      <div class="container about__grid">
+        <div class="about__text">
+          <p class="eyebrow" data-reveal data-t="about.eyebrow"></p>
+          <h2 class="section__title" data-reveal data-t="about.title"></h2>
+          <div class="about__body" data-list="about.paragraphs">
+            <template>
+              <p data-reveal data-t="."></p>
+            </template>
+          </div>
+        </div>
+        <figure class="about__media" data-reveal>
+          <img class="about__img" src="assets/img/about.jpg" width="1200" height="1500"
+               loading="lazy" decoding="async" data-parallax data-t-attr="alt:about.imageAlt">
+        </figure>
       </div>
     </section>
 
-    <section class="section section--alt" id="about">
+    <!-- PRINCIPLES -->
+    <section class="section section--alt principles" id="principles">
       <div class="container">
-        <p class="eyebrow">02</p>
-        <h2 class="section__title">Про нас</h2>
+        <header class="section__head">
+          <p class="eyebrow" data-reveal data-t="principles.eyebrow"></p>
+          <h2 class="section__title" data-reveal data-t="principles.title"></h2>
+        </header>
+        <ol class="principles__list" data-list="principles.items">
+          <template>
+            <li class="principle" data-reveal>
+              <span class="principle__num" aria-hidden="true" data-index></span>
+              <h3 class="principle__title" data-t="title"></h3>
+              <p class="principle__text" data-t="text"></p>
+            </li>
+          </template>
+        </ol>
       </div>
     </section>
 
-    <section class="section" id="masters">
+    <!-- SERVICES -->
+    <section class="section services" id="services">
       <div class="container">
-        <p class="eyebrow">03</p>
-        <h2 class="section__title">Майстри</h2>
+        <header class="section__head">
+          <p class="eyebrow" data-reveal data-t="services.eyebrow"></p>
+          <h2 class="section__title" data-reveal data-t="services.title"></h2>
+        </header>
+        <ul class="services__grid" data-list="services.items">
+          <template>
+            <li class="service" data-reveal>
+              <span class="service__num" aria-hidden="true" data-index></span>
+              <h3 class="service__name" data-t="name"></h3>
+            </li>
+          </template>
+        </ul>
       </div>
     </section>
 
-    <section class="section section--alt" id="gallery">
+    <!-- BOOKING — shell only, so every "Записатися" has somewhere to land -->
+    <section class="section section--alt section--shell" id="booking">
       <div class="container">
-        <p class="eyebrow">04</p>
-        <h2 class="section__title">Галерея</h2>
-      </div>
-    </section>
-
-    <section class="section" id="booking">
-      <div class="container">
-        <p class="eyebrow">05</p>
-        <h2 class="section__title">Запис</h2>
-      </div>
-    </section>
-
-    <section class="section section--alt" id="contacts">
-      <div class="container">
-        <p class="eyebrow">06</p>
-        <h2 class="section__title">Контакти</h2>
+        <p class="eyebrow" data-t="booking.eyebrow"></p>
+        <h2 class="section__title" data-t="booking.title"></h2>
       </div>
     </section>
 
@@ -152,6 +183,7 @@
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+  <script defer src="js/content.js"></script>
   <script defer src="js/animations.js"></script>
   <script defer src="js/main.js"></script>
 </body>

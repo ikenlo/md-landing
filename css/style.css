@@ -11,9 +11,12 @@
    7. Navigation
    8. Mobile menu
    9. Hero
-   10. Section shells
-   11. Desktop enhancements
-   12. Reduced motion
+   10. Sections
+   11. About
+   12. Principles
+   13. Services
+   14. Desktop enhancements
+   15. Reduced motion
    ========================================================================== */
 
 /* 1. TOKENS
@@ -285,18 +288,16 @@ em {
   padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
 }
 
-/* Line-reveal mask for headings */
-.line {
-  display: block;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
   overflow: hidden;
-  /* room for descenders / italic overhang inside the mask */
-  padding-bottom: 0.12em;
-  margin-bottom: -0.12em;
-}
-
-.line__inner {
-  display: block;
-  will-change: transform;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* 5. BUTTONS
@@ -328,11 +329,6 @@ em {
 .btn--gold {
   background: var(--gold-500);
   color: var(--green-900);
-}
-
-.btn--ghost {
-  border-color: rgb(var(--gold-500-rgb) / 0.5);
-  color: var(--neutral-100);
 }
 
 .btn--block {
@@ -610,53 +606,94 @@ em {
 .hero {
   position: relative;
   display: flex;
-  align-items: flex-end;
-  min-height: 100vh;
-  min-height: 100svh;
-  padding-top: calc(var(--nav-h) + var(--sp-6));
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;                      /* fallback */
+  min-height: 100dvh;
+  padding-top: calc(var(--nav-h) + env(safe-area-inset-top) + var(--sp-5));
   padding-bottom: var(--sp-9);
   overflow: hidden;
   isolation: isolate;
+  text-align: center;
 }
 
-/* Placeholder atmosphere until photography lands */
-.hero__bg {
+.hero__media {
   position: absolute;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
+  background: var(--green-800);           /* shown until the image decodes */
+}
+
+.hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.55);
+  transform-origin: 50% 60%;
+  will-change: transform;                 /* GSAP "breathing" scale lives here */
+}
+
+/* Brand tint + top/bottom falloff: nav stays legible, hero melts into the page */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
   background:
-    radial-gradient(90% 55% at 85% 12%, rgb(var(--gold-500-rgb) / 0.20), transparent 62%),
-    radial-gradient(110% 70% at 0% 100%, var(--green-700), transparent 70%),
-    linear-gradient(180deg, var(--green-800) 0%, var(--green-900) 100%);
+    linear-gradient(180deg,
+      rgb(var(--green-900-rgb) / 0.72) 0%,
+      rgb(var(--green-900-rgb) / 0.08) 32%,
+      rgb(var(--green-900-rgb) / 0.20) 62%,
+      var(--green-900) 100%),
+    radial-gradient(80% 50% at 50% 46%, transparent 0%, rgb(var(--green-900-rgb) / 0.35) 100%),
+    rgb(var(--green-800-rgb) / 0.22);
 }
 
 .hero__content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--sp-5);
+  align-items: center;
 }
 
 .hero__title {
-  font-size: var(--fs-display);
+  width: min(62vw, 15rem);
+  margin-top: var(--sp-6);
+  line-height: 0;
 }
 
-.hero__lead {
-  max-width: 32ch;
-  font-size: var(--fs-md);
-  color: var(--text-muted);
-}
-
-.hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3);
+.hero__logo {
   width: 100%;
-  margin-top: var(--sp-2);
+  height: auto;
+  overflow: visible;
 }
 
-.hero__actions .btn {
-  flex: 1 1 8.5rem;
+.hero__logo-letter,
+.hero__logo-amp {
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.hero__logo-letter {
+  stroke: var(--neutral-100);
+  stroke-width: 1.75;
+}
+
+.hero__logo-amp {
+  stroke: var(--gold-500);
+  stroke-width: 1.5;
+}
+
+.hero__subhead {
+  max-width: 26ch;
+  margin-top: var(--sp-6);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.3;
+  color: rgb(var(--neutral-100-rgb) / 0.88);
+}
+
+.hero__cta {
+  min-width: 13.75rem;                    /* 220px — easy thumb reach */
+  margin-top: var(--sp-6);
 }
 
 .hero__scroll {
@@ -682,13 +719,9 @@ em {
   100% { transform: translateY(100%); }
 }
 
-/* 10. SECTION SHELLS
+/* 10. SECTIONS
    ========================================================================== */
 .section {
-  display: flex;
-  align-items: center;
-  min-height: 80vh;
-  min-height: 80svh;
   padding-block: var(--sp-9);
   background: var(--bg);
 }
@@ -697,11 +730,140 @@ em {
   background: var(--bg-alt);
 }
 
+/* Placeholder section awaiting its content */
+.section--shell {
+  display: flex;
+  align-items: center;
+  min-height: 60vh;
+  min-height: 60svh;
+}
+
+.section__head {
+  margin-bottom: var(--sp-7);
+}
+
 .section__title {
   margin-top: var(--sp-3);
 }
 
-/* 11. DESKTOP ENHANCEMENTS
+/* 11. ABOUT — mobile: text, then 4:5 image
+   ========================================================================== */
+.about__grid {
+  display: grid;
+  gap: var(--sp-7);
+}
+
+.about__body {
+  display: grid;
+  gap: var(--sp-4);
+  margin-top: var(--sp-5);
+  font-size: var(--fs-md);
+  color: var(--text-muted);
+}
+
+.about__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;         /* arch — echoes a salon mirror */
+  background: var(--green-700);
+}
+
+.about__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.14);                 /* headroom for the scroll parallax */
+  will-change: transform;
+}
+
+/* 12. PRINCIPLES — mobile: one column
+   ========================================================================== */
+.principles__list {
+  display: grid;
+}
+
+.principle {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+  column-gap: var(--sp-4);
+  row-gap: var(--sp-2);
+  padding-block: var(--sp-5);
+  border-top: 1px solid var(--line);
+}
+
+.principle:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.principle__num {
+  grid-row: 1 / span 2;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-style: italic;
+  line-height: 0.9;
+  color: var(--gold-500);
+}
+
+.principle__title {
+  font-size: var(--fs-xl);
+  line-height: 1.1;
+}
+
+.principle__text {
+  color: var(--text-muted);
+}
+
+/* 13. SERVICES — mobile: 2 × 2
+   ========================================================================== */
+.services__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.service {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 4 / 5;
+  padding: var(--sp-4);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(90% 60% at 100% 0%, rgb(var(--gold-500-rgb) / 0.14), transparent 70%),
+    linear-gradient(160deg, var(--green-700), var(--green-800) 70%);
+  transition:
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out);
+}
+
+.service__num {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  color: var(--gold-500);
+}
+
+.service__name {
+  font-size: 1.5rem;                      /* 24px — "Фарбування" fits one line at 375 */
+  line-height: 1.08;
+  overflow-wrap: break-word;
+}
+
+.service__name::before {
+  content: '';
+  display: block;
+  width: 1.5rem;
+  height: 1px;
+  margin-bottom: var(--sp-3);
+  background: var(--gold-500);
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+/* 14. DESKTOP ENHANCEMENTS
    ========================================================================== */
 
 /* Hover only where a real pointer exists — no sticky hovers on touch */
@@ -710,13 +872,16 @@ em {
     background: var(--gold-400);
   }
 
-  .btn--ghost:hover {
-    border-color: var(--gold-500);
+  .menu__link:hover {
     color: var(--gold-400);
   }
 
-  .menu__link:hover {
-    color: var(--gold-400);
+  .service:hover {
+    border-color: rgb(var(--gold-500-rgb) / 0.6);
+  }
+
+  .service:hover .service__name::before {
+    transform: scaleX(2);
   }
 
   .nav__link:hover {
@@ -734,16 +899,24 @@ em {
     --gutter: 2.5rem;
   }
 
-  .hero__actions {
-    width: auto;
+  .hero__title {
+    width: 19rem;
   }
 
-  .hero__actions .btn {
-    flex: none;
+  .hero__subhead {
+    max-width: 34ch;
   }
 
-  .hero__lead {
-    max-width: 44ch;
+  .section {
+    padding-block: var(--sp-10);
+  }
+
+  .service {
+    padding: var(--sp-5);
+  }
+
+  .service__name {
+    font-size: var(--fs-lg);
   }
 
   .monogram {
@@ -810,13 +983,56 @@ em {
     padding-inline: var(--sp-5);
   }
 
-  .hero {
+  .hero__title {
+    width: 22rem;
+  }
+
+  .section__head {
+    margin-bottom: var(--sp-8);
+  }
+
+  /* About: text left, image right */
+  .about__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
     align-items: center;
-    padding-bottom: var(--sp-8);
+    justify-content: space-between;
+    gap: var(--sp-9);
+  }
+
+  .about__text {
+    max-width: 34rem;
+  }
+
+  /* Principles: three columns */
+  .principles__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-7);
+  }
+
+  .principle,
+  .principle:last-child {
+    display: block;
+    padding-block: var(--sp-5) 0;
+    border-bottom: 0;
+  }
+
+  .principle__num {
+    display: block;
+    margin-bottom: var(--sp-5);
+  }
+
+  .principle__title {
+    margin-bottom: var(--sp-3);
+  }
+
+  /* Services: four columns */
+  .services__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--sp-5);
   }
 }
 
-/* 12. REDUCED MOTION
+/* 15. REDUCED MOTION
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {
