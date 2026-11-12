@@ -52,7 +52,7 @@
           <a class="nav__link" data-t="label" data-t-attr="href:href"></a>
         </template>
       </nav>
-      <a class="btn btn--gold nav__cta" href="#booking" data-t="nav.cta"></a>
+      <button class="btn btn--gold nav__cta" type="button" data-open-booking data-t="nav.cta"></button>
 
       <button class="nav__burger" id="navBurger" type="button"
               aria-expanded="false" aria-controls="menu" data-t-attr="aria-label:a11y.menuOpen">
@@ -66,7 +66,7 @@
        Lives outside <header>: backdrop-filter on the nav would otherwise
        become the containing block for this fixed overlay. -->
   <div class="menu" id="menu" role="dialog" aria-modal="true" data-t-attr="aria-label:a11y.menu" inert>
-    <nav class="menu__nav" data-t-attr="aria-label:a11y.navMobile">
+    <nav class="menu__nav" data-lenis-prevent data-t-attr="aria-label:a11y.navMobile">
       <ul class="menu__list" data-list="nav.links">
         <template>
           <li class="menu__item">
@@ -76,7 +76,7 @@
       </ul>
     </nav>
     <div class="menu__footer">
-      <a class="btn btn--gold btn--block menu__cta" href="#booking" data-t="nav.cta"></a>
+      <button class="btn btn--gold btn--block menu__cta" type="button" data-open-booking data-t="nav.cta"></button>
     </div>
   </div>
 
@@ -105,7 +105,7 @@
           </svg>
         </h1>
         <p class="hero__subhead" data-hero-fade data-t="hero.subhead"></p>
-        <a class="btn btn--gold hero__cta" href="#booking" data-hero-fade data-t="hero.cta"></a>
+        <button class="btn btn--gold hero__cta" type="button" data-open-booking data-hero-fade data-t="hero.cta"></button>
       </div>
 
       <div class="hero__scroll" aria-hidden="true" data-hero-fade>
@@ -169,15 +169,173 @@
       </div>
     </section>
 
-    <!-- BOOKING — shell only, so every "Записатися" has somewhere to land -->
-    <section class="section section--alt section--shell" id="booking">
+    <!-- GALLERY -->
+    <section class="section section--alt gallery" id="gallery">
       <div class="container">
-        <p class="eyebrow" data-t="booking.eyebrow"></p>
-        <h2 class="section__title" data-t="booking.title"></h2>
+        <header class="section__head">
+          <p class="eyebrow" data-reveal data-t="gallery.eyebrow"></p>
+          <h2 class="section__title" data-reveal data-t="gallery.title"></h2>
+        </header>
+        <ul class="gallery__grid" data-list="gallery.items">
+          <template>
+            <li data-reveal>
+              <button class="gallery__item" type="button">
+                <img class="gallery__img" width="1100" height="1100" loading="lazy" decoding="async"
+                     data-t-attr="src:src;alt:alt">
+              </button>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </section>
+
+    <!-- VISIT — timeline; the gold line is drawn by scroll (see animations.js) -->
+    <section class="section visit" id="visit">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow" data-reveal data-t="visit.eyebrow"></p>
+          <h2 class="section__title" data-reveal data-t="visit.title"></h2>
+        </header>
+        <div class="visit__timeline">
+          <!-- mobile: vertical rail -->
+          <svg class="visit__line visit__line--v" viewBox="0 0 2 100" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
+            <path class="visit__track" d="M1 0 V100"/>
+            <path class="visit__progress" d="M1 0 V100" pathLength="1"/>
+          </svg>
+          <!-- desktop: horizontal rail -->
+          <svg class="visit__line visit__line--h" viewBox="0 0 100 2" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
+            <path class="visit__track" d="M0 1 H100"/>
+            <path class="visit__progress" d="M0 1 H100" pathLength="1"/>
+          </svg>
+          <ol class="visit__steps" data-list="visit.steps">
+            <template>
+              <li class="step">
+                <span class="step__dot" aria-hidden="true"></span>
+                <div data-reveal>
+                  <span class="step__num" aria-hidden="true" data-index></span>
+                  <h3 class="step__title" data-t="title"></h3>
+                  <p class="step__text" data-t="text"></p>
+                </div>
+              </li>
+            </template>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA & CONTACTS -->
+    <section class="section contacts" id="contacts">
+      <div class="container">
+        <p class="eyebrow" data-reveal data-t="contacts.eyebrow"></p>
+        <h2 class="contacts__title" data-reveal data-t="contacts.title"></h2>
+        <p class="contacts__lead" data-reveal data-t="contacts.lead"></p>
+        <div data-reveal>
+          <button class="btn btn--gold contacts__cta" type="button" data-open-booking data-t="contacts.cta"></button>
+        </div>
+
+        <ul class="contacts__rows">
+          <li data-reveal>
+            <a class="contact-row" data-t-attr="href:contacts.phone.href">
+              <span class="contact-row__label" data-t="contacts.phone.label"></span>
+              <span class="contact-row__value" data-t="contacts.phone.value"></span>
+              <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+          </li>
+          <li data-reveal>
+            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.address.href">
+              <span class="contact-row__label" data-t="contacts.address.label"></span>
+              <span class="contact-row__value" data-t="contacts.address.value"></span>
+              <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+          </li>
+        </ul>
       </div>
     </section>
 
   </main>
+
+  <footer class="footer" id="footer">
+    <div class="container">
+      <p class="footer__copy" data-t="footer.copy"></p>
+    </div>
+  </footer>
+
+  <!-- ============ FLOATING CTA (mobile only) ============ -->
+  <button class="fab btn btn--gold" id="fab" type="button" data-open-booking data-t="nav.cta"></button>
+
+  <!-- ============ LIGHTBOX ============ -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" tabindex="-1" inert
+       data-t-attr="aria-label:a11y.lightbox">
+    <div class="lightbox__bar">
+      <p class="lightbox__counter" aria-live="polite"></p>
+      <button class="icon-btn" type="button" data-close-overlay data-t-attr="aria-label:a11y.close">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
+      </button>
+    </div>
+    <div class="lightbox__stage">
+      <img class="lightbox__img" alt="" draggable="false">
+    </div>
+    <div class="lightbox__nav">
+      <button class="icon-btn icon-btn--ring lightbox__prev" type="button" data-t-attr="aria-label:a11y.prevPhoto">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
+      </button>
+      <button class="icon-btn icon-btn--ring lightbox__next" type="button" data-t-attr="aria-label:a11y.nextPhoto">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ BOOKING MODAL (mockup — no backend yet) ============ -->
+  <div class="modal" id="booking" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" inert>
+    <div class="modal__backdrop" data-close-overlay></div>
+    <div class="modal__panel" tabindex="-1" data-lenis-prevent>
+      <button class="icon-btn modal__close" type="button" data-close-overlay data-t-attr="aria-label:a11y.close">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
+      </button>
+
+      <div class="booking__form-view">
+        <p class="eyebrow" data-t="booking.eyebrow"></p>
+        <h2 class="modal__title" id="bookingTitle" data-t="booking.title"></h2>
+        <p class="modal__lead" data-t="booking.lead"></p>
+
+        <form class="form" id="bookingForm" novalidate>
+          <div class="field">
+            <label class="field__label" for="bookingName" data-t="booking.name.label"></label>
+            <input class="field__control" id="bookingName" name="name" type="text" autocomplete="name"
+                   aria-describedby="bookingNameError" data-t-attr="placeholder:booking.name.placeholder">
+            <p class="field__error" id="bookingNameError" data-t="booking.name.error"></p>
+          </div>
+          <div class="field">
+            <label class="field__label" for="bookingPhone" data-t="booking.phone.label"></label>
+            <input class="field__control" id="bookingPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
+                   aria-describedby="bookingPhoneError" data-t-attr="placeholder:booking.phone.placeholder">
+            <p class="field__error" id="bookingPhoneError" data-t="booking.phone.error"></p>
+          </div>
+          <div class="field">
+            <label class="field__label" for="bookingService" data-t="booking.service.label"></label>
+            <select class="field__control field__control--select" id="bookingService" name="service"
+                    aria-describedby="bookingServiceError" data-list="services.items">
+              <option value="" selected data-t="booking.service.placeholder"></option>
+              <template>
+                <option data-t="name" data-t-attr="value:name"></option>
+              </template>
+            </select>
+            <p class="field__error" id="bookingServiceError" data-t="booking.service.error"></p>
+          </div>
+          <button class="btn btn--gold btn--block" type="submit" data-t="booking.submit"></button>
+        </form>
+      </div>
+
+      <div class="booking__success" hidden tabindex="-1">
+        <svg class="booking__check" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
+          <circle cx="24" cy="24" r="23"/><path d="M15 24.5l6.5 6.5L34 18"/>
+        </svg>
+        <h2 class="modal__title" data-t="booking.success.title"></h2>
+        <p class="modal__lead" data-t="booking.success.text"></p>
+        <button class="btn btn--gold btn--block" type="button" data-close-overlay data-t="booking.success.button"></button>
+      </div>
+    </div>
+  </div>
 
   <!-- ============ SCRIPTS ============ -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>

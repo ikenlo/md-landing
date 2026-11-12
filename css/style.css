@@ -15,8 +15,13 @@
    11. About
    12. Principles
    13. Services
-   14. Desktop enhancements
-   15. Reduced motion
+   14. Gallery
+   15. Visit timeline
+   16. CTA & contacts, footer
+   17. Floating CTA
+   18. Overlays: icon buttons, lightbox, booking modal, form
+   19. Desktop enhancements
+   20. Reduced motion
    ========================================================================== */
 
 /* 1. TOKENS
@@ -98,9 +103,11 @@
   --dur-slow: 0.7s;
 
   /* Stacking */
+  --z-fab: 80;
   --z-menu: 90;
   --z-nav: 100;
   --z-skip: 200;
+  --z-overlay: 300;
   --z-preloader: 1000;
 }
 
@@ -730,14 +737,6 @@ em {
   background: var(--bg-alt);
 }
 
-/* Placeholder section awaiting its content */
-.section--shell {
-  display: flex;
-  align-items: center;
-  min-height: 60vh;
-  min-height: 60svh;
-}
-
 .section__head {
   margin-bottom: var(--sp-7);
 }
@@ -863,7 +862,518 @@ em {
   transition: transform var(--dur-slow) var(--ease-out);
 }
 
-/* 14. DESKTOP ENHANCEMENTS
+/* 14. GALLERY — mobile: 2 columns of squares
+   ========================================================================== */
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.gallery__item {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--green-700);
+  cursor: zoom-in;
+  touch-action: manipulation;
+}
+
+.gallery__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.gallery__item:active .gallery__img {
+  transform: scale(1.04);
+}
+
+/* 15. VISIT TIMELINE — mobile: vertical rail drawn on scroll
+   ========================================================================== */
+.visit__timeline {
+  --rail: 2.75rem;                        /* space reserved for the rail */
+  --dot: 0.8125rem;                       /* 13px marker */
+  position: relative;
+}
+
+.visit__line {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.visit__line--v {
+  top: 0.5rem;
+  bottom: 0;
+  left: calc(var(--dot) / 2 - 1px);
+  width: 2px;
+  height: calc(100% - 0.5rem);
+}
+
+.visit__line--h {
+  display: none;
+}
+
+.visit__track {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+/* pathLength="1": one dash spans the whole rail. Fully drawn by default;
+   animations.js rewinds it and lets scroll draw it back in. */
+.visit__progress {
+  stroke: var(--gold-500);
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.visit__steps {
+  display: grid;
+  gap: var(--sp-7);
+}
+
+.step {
+  position: relative;
+  padding-left: var(--rail);
+}
+
+.step__dot {
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  width: var(--dot);
+  height: var(--dot);
+  border: 1px solid var(--gold-500);
+  border-radius: 50%;
+  background: var(--bg);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+.step.is-active .step__dot {
+  background: var(--gold-500);
+  box-shadow: 0 0 0 5px rgb(var(--gold-500-rgb) / 0.16);
+  transform: scale(1.1);
+}
+
+.step__num {
+  display: block;
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  color: var(--gold-500);
+}
+
+.step__title {
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-xl);
+  line-height: 1.1;
+}
+
+.step__text {
+  color: var(--text-muted);
+}
+
+/* 16. CTA & CONTACTS, FOOTER
+   ========================================================================== */
+.contacts {
+  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(120% 55% at 50% 0%, rgb(var(--gold-500-rgb) / 0.12), transparent 70%),
+    var(--green-900);
+}
+
+.contacts__title {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-display);
+}
+
+.contacts__lead {
+  max-width: 30ch;
+  margin-top: var(--sp-5);
+  font-size: var(--fs-md);
+  color: var(--text-muted);
+}
+
+.contacts__cta {
+  width: 100%;
+  margin-top: var(--sp-6);
+}
+
+.contacts__rows {
+  margin-top: var(--sp-8);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Large tappable rows: label over value, arrow on the right */
+.contact-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--sp-4);
+  row-gap: var(--sp-1);
+  min-height: 6rem;                       /* 96px */
+  padding-block: var(--sp-4);
+  border-top: 1px solid var(--line);
+  touch-action: manipulation;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.contact-row__label {
+  grid-column: 1;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--gold-500);
+}
+
+.contact-row__value {
+  grid-column: 1;
+  font-family: var(--font-display);
+  font-size: 1.75rem;                     /* 28px */
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.contact-row__arrow {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 1.75rem;
+  height: 1.75rem;
+  stroke: var(--gold-500);
+  stroke-width: 1.25;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.contact-row:active {
+  color: var(--gold-400);
+}
+
+.contact-row:active .contact-row__arrow {
+  transform: translate(3px, -3px);
+}
+
+.footer {
+  padding-block: var(--sp-5) calc(var(--sp-5) + env(safe-area-inset-bottom));
+  background: var(--green-900);
+}
+
+.footer__copy {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  color: rgb(var(--neutral-100-rgb) / 0.5);
+}
+
+/* 17. FLOATING CTA — mobile only, bottom-right thumb zone
+   ========================================================================== */
+.fab {
+  position: fixed;
+  right: max(var(--sp-4), env(safe-area-inset-right));
+  bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
+  z-index: var(--z-fab);
+  padding-inline: var(--sp-5);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.38), 0 0 0 1px rgb(var(--green-900-rgb) / 0.2);
+  opacity: 0;
+  visibility: hidden;                     /* also keeps it out of the tab order */
+  transform: translateY(1rem);
+  transition:
+    opacity var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out),
+    visibility 0s linear var(--dur);
+}
+
+.fab.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.fab.is-visible:active {
+  transform: scale(0.97);
+}
+
+/* 18. OVERLAYS
+   ========================================================================== */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  flex: none;
+  border-radius: 50%;
+  color: var(--neutral-100);
+  touch-action: manipulation;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.icon-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.icon-btn--ring {
+  width: 3.5rem;                          /* 56px */
+  height: 3.5rem;
+  border: 1px solid rgb(var(--gold-500-rgb) / 0.5);
+}
+
+.icon-btn:active {
+  color: var(--gold-400);
+}
+
+/* --- Lightbox --- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--green-900);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur) var(--ease-out), visibility 0s linear var(--dur);
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.lightbox:focus {
+  outline: none;
+}
+
+.lightbox__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--sp-3) + env(safe-area-inset-top)) max(calc(var(--gutter) - 0.75rem), env(safe-area-inset-right)) var(--sp-3) max(var(--gutter), env(safe-area-inset-left));
+}
+
+.lightbox__counter {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: var(--ls-caps);
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-500);
+}
+
+.lightbox__stage {
+  display: grid;
+  /* definite track sizes, so the photo's max-height: 100% has something to resolve against */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  min-height: 0;
+  padding-inline: var(--gutter);
+  overflow: hidden;
+  touch-action: pan-y pinch-zoom;         /* horizontal swipes belong to JS */
+}
+
+.lightbox__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  will-change: transform;
+}
+
+.lightbox__nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-5);
+  padding: var(--sp-5) var(--gutter) calc(var(--sp-5) + env(safe-area-inset-bottom));
+}
+
+/* --- Booking modal: full-screen sheet on phones (keeps fields above the keyboard) --- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: flex-end;
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-slow);
+}
+
+.modal.is-open {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(var(--green-900-rgb) / 0.72);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease-out);
+}
+
+.modal.is-open .modal__backdrop {
+  opacity: 1;
+}
+
+.modal__panel {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding:
+    calc(var(--sp-9) + env(safe-area-inset-top))
+    max(var(--gutter), env(safe-area-inset-right))
+    calc(var(--sp-6) + env(safe-area-inset-bottom))
+    max(var(--gutter), env(safe-area-inset-left));
+  background:
+    radial-gradient(120% 40% at 50% 0%, rgb(var(--gold-500-rgb) / 0.10), transparent 70%),
+    var(--green-800);
+  transform: translateY(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.modal.is-open .modal__panel {
+  transform: none;
+}
+
+.modal__panel:focus,
+.booking__success:focus {
+  outline: none;
+}
+
+.modal__close {
+  position: absolute;
+  top: calc(var(--sp-3) + env(safe-area-inset-top));
+  right: max(calc(var(--gutter) - 0.75rem), env(safe-area-inset-right));
+}
+
+.modal__title {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-3xl);
+}
+
+.modal__lead {
+  margin-top: var(--sp-4);
+  color: var(--text-muted);
+}
+
+.booking__success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.booking__success[hidden],
+.booking__form-view[hidden] {
+  display: none;
+}
+
+.booking__success .btn {
+  margin-top: var(--sp-6);
+}
+
+.booking__check {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: var(--sp-4);
+  stroke: var(--gold-500);
+  stroke-width: 1.25;
+}
+
+/* --- Form --- */
+.form {
+  display: grid;
+  gap: var(--sp-5);
+  margin-top: var(--sp-6);
+}
+
+.field {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.field__label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--gold-500);
+}
+
+.field__control {
+  width: 100%;
+  min-height: 3.5rem;                     /* 56px */
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background-color: rgb(var(--neutral-100-rgb) / 0.04);
+  color: var(--neutral-100);
+  font-size: 1rem;                        /* ≥16px: iOS won't zoom on focus */
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+
+.field__control::placeholder {
+  color: rgb(var(--neutral-100-rgb) / 0.4);
+}
+
+.field__control:focus {
+  outline: none;
+  border-color: var(--gold-500);
+  background-color: rgb(var(--neutral-100-rgb) / 0.07);
+}
+
+.field__control--select {
+  padding-right: var(--sp-7);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C8A97E' stroke-width='1.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--sp-4) center;
+  background-size: 1.25rem;
+  cursor: pointer;
+}
+
+.field__control--select option {
+  background: var(--green-800);
+  color: var(--neutral-100);
+}
+
+.field__error {
+  display: none;
+  font-size: var(--fs-sm);
+  color: var(--gold-400);
+}
+
+.field.is-invalid .field__control {
+  border-color: var(--gold-400);
+}
+
+.field.is-invalid .field__error {
+  display: block;
+}
+
+/* 19. DESKTOP ENHANCEMENTS
    ========================================================================== */
 
 /* Hover only where a real pointer exists — no sticky hovers on touch */
@@ -878,6 +1388,27 @@ em {
 
   .service:hover {
     border-color: rgb(var(--gold-500-rgb) / 0.6);
+  }
+
+  .gallery__item:hover .gallery__img {
+    transform: scale(1.06);
+  }
+
+  .contact-row:hover {
+    color: var(--gold-400);
+  }
+
+  .contact-row:hover .contact-row__arrow {
+    transform: translate(3px, -3px);
+  }
+
+  .icon-btn:hover {
+    color: var(--gold-400);
+  }
+
+  .icon-btn--ring:hover {
+    border-color: var(--gold-500);
+    background-color: rgb(var(--gold-500-rgb) / 0.1);
   }
 
   .service:hover .service__name::before {
@@ -913,6 +1444,46 @@ em {
 
   .service {
     padding: var(--sp-5);
+  }
+
+  .contacts__cta {
+    width: auto;
+    min-width: 15rem;
+  }
+
+  .contact-row__value {
+    font-size: var(--fs-xl);
+  }
+
+  /* Booking modal becomes a centred card */
+  .modal {
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-5);
+  }
+
+  .modal__panel {
+    width: min(100%, 31rem);
+    height: auto;
+    max-height: calc(100dvh - 3rem);
+    padding: var(--sp-8) var(--sp-7) var(--sp-7);
+    border: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur) var(--ease-out);
+  }
+
+  .modal.is-open .modal__panel {
+    opacity: 1;
+  }
+
+  .modal__close {
+    top: var(--sp-3);
+    right: var(--sp-3);
+  }
+
+  .modal__title {
+    font-size: var(--fs-2xl);
   }
 
   .service__name {
@@ -1030,9 +1601,89 @@ em {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--sp-5);
   }
+
+  /* Gallery: three columns */
+  .gallery__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-5);
+  }
+
+  /* Visit: three columns under a horizontal rail */
+  .visit__line--v {
+    display: none;
+  }
+
+  .visit__line--h {
+    display: block;
+    top: calc(var(--dot) / 2 - 1px);
+    left: 0;
+    width: 100%;
+    height: 2px;
+  }
+
+  .visit__steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-7);
+  }
+
+  .step {
+    padding-left: 0;
+    padding-top: var(--sp-7);
+  }
+
+  .step__dot {
+    top: 0;
+  }
+
+  .step__text {
+    max-width: 30ch;
+  }
+
+  /* Contacts: headline left, rows right */
+  .contacts .container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--sp-9);
+    align-items: end;
+  }
+
+  .contacts .container > * {
+    grid-column: 1;
+  }
+
+  .contacts .contacts__rows {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    margin-top: 0;
+  }
+
+  /* Floating CTA is mobile-only: the nav already carries the button here */
+  .fab {
+    display: none;
+  }
+
+  /* Lightbox: arrows flank the image */
+  .lightbox__stage {
+    padding: 0 7rem var(--sp-7);
+  }
+
+  .lightbox__nav {
+    position: absolute;
+    top: 50%;
+    left: var(--sp-6);
+    right: var(--sp-6);
+    justify-content: space-between;
+    padding: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .lightbox__nav .icon-btn {
+    pointer-events: auto;
+  }
 }
 
-/* 15. REDUCED MOTION
+/* 20. REDUCED MOTION
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {

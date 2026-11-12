@@ -1,13 +1,16 @@
 /* ==========================================================================
    M&D — main.js
-   App logic: content binding, smooth scroll, preloader boot, sticky nav
-   state, mobile menu. Copy comes from content.js (window.MD.content),
-   timelines from animations.js (window.MD.animations).
+   App logic: content binding, smooth scroll, preloader boot, sticky nav,
+   mobile menu, floating CTA, gallery lightbox and the booking form mockup.
+   Copy comes from content.js (window.MD.content), timelines from
+   animations.js (window.MD.animations).
    ========================================================================== */
 (function () {
   'use strict';
 
   var SCROLL_THRESHOLD = 80;                       // px before the nav turns solid
+  var FAB_THRESHOLD = 600;                         // px before the floating CTA appears
+  var SWIPE_THRESHOLD = 50;                        // px of horizontal travel that counts as a swipe
   var DESKTOP = window.matchMedia('(min-width: 64rem)');
 
   var anim = (window.MD && window.MD.animations) || { available: false };
@@ -17,6 +20,8 @@
   var burger = document.getElementById('navBurger');
   var menu = document.getElementById('menu');
   var main = document.getElementById('main');
+  var footer = document.getElementById('footer');
+  var fab = document.getElementById('fab');
   var lenis = null;
 
   /* ---------- Content binding (content.js → DOM) ---------- */
@@ -115,12 +120,18 @@
     window.gsap.ticker.lagSmoothing(0);
   }
 
-  /* ---------- Sticky nav: transparent → green-800 + blur past 80px ---------- */
-  function initNavScroll() {
+  /* ---------- Scroll state ------------------------------------------------
+     Nav: transparent → green-800 + blur past 80px.
+     Floating CTA: shows past 600px, steps aside once the contacts section
+     (which has its own button and tappable rows) is on screen. */
+  function initScrollState() {
     var ticking = false;
+    var contactsInView = false;
 
     function update() {
-      nav.classList.toggle('is-scrolled', window.scrollY > SCROLL_THRESHOLD);
+      var y = window.scrollY;
+      nav.classList.toggle('is-scrolled', y > SCROLL_THRESHOLD);
+      if (fab) fab.classList.toggle('is-visible', y > FAB_THRESHOLD && !contactsInView);
       ticking = false;
     }
 
@@ -130,7 +141,22 @@
       window.requestAnimationFrame(update);
     }, { passive: true });
 
+    var contacts = document.getElementById('contacts');
+    if (contacts && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        contactsInView = entries[0].isIntersecting;
+        update();
+      }, { rootMargin: '0px 0px -25% 0px' }).observe(contacts);
+    }
+
     update();                                     // correct state on reload mid-page
+  }
+
+  // Everything behind a full-screen layer leaves the tab order and the a11y tree.
+  function setPageInert(on) {
+    [main, footer, fab].forEach(function (el) {
+      if (el) el.inert = on;
+    });
   }
 
   /* ---------- Mobile menu ---------- */
@@ -143,7 +169,7 @@
     var labels = content.a11y || {};
     burger.setAttribute('aria-label', open ? labels.menuClose : labels.menuOpen);
     nav.classList.toggle('is-menu-open', open);
-    main.inert = open;                            // focus stays in header + menu
+    setPageInert(open);                           // focus stays in header + menu
   }
 
   function openMenu() {
@@ -186,19 +212,255 @@
       if (menuOpen) closeMenu(); else openMenu();
     });
 
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && menuOpen) {
-        closeMenu();
-        burger.focus();
-      }
-    });
-
     // Crossing into the desktop layout with the menu open: reset cleanly.
     var onBreakpoint = function (e) {
       if (e.matches) closeMenu({ instant: true });
     };
     if (DESKTOP.addEventListener) DESKTOP.addEventListener('change', onBreakpoint);
     else DESKTOP.addListener(onBreakpoint);
+  }
+
+  /* ---------- Overlays (lightbox, booking modal) -----------------------------
+     One at a time. Opening locks scroll, makes the page behind inert and moves
+     focus in; closing puts focus back on whatever opened it. */
+  var activeOverlay = null;
+  var returnFocus = null;
+
+  function openOverlay(el, focusTarget) {
+    if (activeOverlay) return;
+
+    returnFocus = document.activeElement;
+    if (menuOpen) {
+      closeMenu();
+      returnFocus = burger;                       // the menu button that was tapped is gone
+    }
+
+    activeOverlay = el;
+    el.inert = false;
+    el.classList.add('is-open');
+    setPageInert(true);
+    nav.inert = true;
+    lockScroll();
+    (focusTarget || el).focus({ preventScroll: true });
+  }
+
+  function closeOverlay() {
+    if (!activeOverlay) return;
+
+    var el = activeOverlay;
+    activeOverlay = null;
+    el.classList.remove('is-open');
+    el.inert = true;
+    setPageInert(false);
+    nav.inert = false;
+    unlockScroll();
+
+    if (returnFocus && returnFocus.focus) returnFocus.focus({ preventScroll: true });
+    returnFocus = null;
+  }
+
+  function initOverlays() {
+    document.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-close-overlay]')) closeOverlay();
+    });
+  }
+
+  /* ---------- Gallery lightbox ------------------------------------------------
+     Tap a tile to open. Navigate with a swipe (touch), ← → (keyboard) or the
+     arrow buttons; Esc, ✕ or a tap on the empty area closes. */
+  var lightbox = null;
+
+  function initLightbox() {
+    var el = document.getElementById('lightbox');
+    var tiles = Array.prototype.slice.call(document.querySelectorAll('.gallery__item'));
+    if (!el || !tiles.length) return;
+
+    var stage = el.querySelector('.lightbox__stage');
+    var img = el.querySelector('.lightbox__img');
+    var counter = el.querySelector('.lightbox__counter');
+    var animated = anim.available;
+    var index = 0;
+
+    var photos = tiles.map(function (tile) {
+      var thumb = tile.querySelector('img');
+      return { src: thumb.getAttribute('src'), alt: thumb.getAttribute('alt') || '' };
+    });
+
+    function show(i) {
+      index = (i + photos.length) % photos.length;  // wraps at both ends
+      img.src = photos[index].src;
+      img.alt = photos[index].alt;
+      counter.textContent = (index + 1) + ' / ' + photos.length;
+    }
+
+    function go(dir) {
+      if (photos.length < 2) return;
+      var next = index + dir;
+      if (animated) anim.lightboxSlide(img, dir, function () { show(next); });
+      else show(next);
+    }
+
+    tiles.forEach(function (tile, i) {
+      tile.addEventListener('click', function () {
+        show(i);
+        if (animated) anim.lightboxReset(img, true);
+        openOverlay(el);
+      });
+    });
+
+    el.querySelector('.lightbox__prev').addEventListener('click', function () { go(-1); });
+    el.querySelector('.lightbox__next').addEventListener('click', function () { go(1); });
+
+    // Tap on the empty area around the photo closes.
+    stage.addEventListener('click', function (e) {
+      if (e.target === stage) closeOverlay();
+    });
+
+    // --- Swipe: touchstart → (touchmove follows the finger) → touchend decides
+    var startX = 0;
+    var startY = 0;
+    var tracking = false;
+    var axis = null;
+
+    stage.addEventListener('touchstart', function (e) {
+      tracking = e.touches.length === 1;          // ignore pinch
+      if (!tracking) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      axis = null;
+    }, { passive: true });
+
+    stage.addEventListener('touchmove', function (e) {
+      if (!tracking || e.touches.length !== 1) return;
+      var dx = e.touches[0].clientX - startX;
+      var dy = e.touches[0].clientY - startY;
+      if (!axis && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      }
+      if (axis === 'x' && animated) anim.lightboxDrag(img, dx);
+    }, { passive: true });
+
+    stage.addEventListener('touchend', function (e) {
+      if (!tracking) return;
+      tracking = false;
+      var dx = e.changedTouches[0].clientX - startX;
+      var dy = e.changedTouches[0].clientY - startY;
+
+      if (Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+        go(dx < 0 ? 1 : -1);                      // swipe left → next photo
+      } else if (animated) {
+        anim.lightboxReset(img);
+      }
+    }, { passive: true });
+
+    stage.addEventListener('touchcancel', function () {
+      tracking = false;
+      if (animated) anim.lightboxReset(img);
+    }, { passive: true });
+
+    lightbox = { el: el, go: go };
+  }
+
+  /* ---------- Booking form (MOCKUP) -------------------------------------------
+     Every [data-open-booking] button opens the modal. Submitting validates and
+     logs the data — nothing is sent anywhere yet. */
+  function initBooking() {
+    var modal = document.getElementById('booking');
+    var form = document.getElementById('bookingForm');
+    if (!modal || !form) return;
+
+    var panel = modal.querySelector('.modal__panel');
+    var formView = modal.querySelector('.booking__form-view');
+    var success = modal.querySelector('.booking__success');
+
+    var rules = {
+      name: function (v) { return v.length >= 2; },
+      phone: function (v) { return v.replace(/\D/g, '').length >= 10; },
+      service: function (v) { return v !== ''; }
+    };
+
+    function control(key) {
+      return form.elements.namedItem(key);
+    }
+
+    function setValidity(input, ok) {
+      input.closest('.field').classList.toggle('is-invalid', !ok);
+      if (ok) input.removeAttribute('aria-invalid');
+      else input.setAttribute('aria-invalid', 'true');
+    }
+
+    function resetForm() {
+      form.reset();
+      Object.keys(rules).forEach(function (key) { setValidity(control(key), true); });
+    }
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest || !e.target.closest('[data-open-booking]')) return;
+      formView.hidden = false;
+      success.hidden = true;
+      panel.scrollTop = 0;
+      // Focus the panel, not the first field: no keyboard popping up uninvited.
+      openOverlay(modal, panel);
+    });
+
+    // Clear an error as soon as the field becomes valid.
+    ['input', 'change'].forEach(function (type) {
+      form.addEventListener(type, function (e) {
+        var rule = rules[e.target.name];
+        if (rule && e.target.closest('.field').classList.contains('is-invalid')) {
+          setValidity(e.target, rule(e.target.value.trim()));
+        }
+      });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var name = control('name').value.trim();
+      var phone = control('phone').value.trim();
+      var service = control('service').value;
+      var values = { name: name, phone: phone, service: service };
+
+      var firstInvalid = null;
+      Object.keys(rules).forEach(function (key) {
+        var ok = rules[key](values[key]);
+        setValidity(control(key), ok);
+        if (!ok && !firstInvalid) firstInvalid = control(key);
+      });
+      if (firstInvalid) {
+        firstInvalid.focus();
+        return;
+      }
+
+      // TODO(backend): send the request. For now the mockup only logs it.
+      console.log('Booking data:', { name: name, phone: phone, service: service });
+
+      resetForm();
+      formView.hidden = true;
+      success.hidden = false;
+      panel.scrollTop = 0;
+      success.focus({ preventScroll: true });
+    });
+  }
+
+  /* ---------- Keyboard ---------- */
+  function initKeyboard() {
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (activeOverlay) {
+          closeOverlay();
+        } else if (menuOpen) {
+          closeMenu();
+          burger.focus();
+        }
+        return;
+      }
+
+      if (lightbox && activeOverlay === lightbox.el) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); lightbox.go(-1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); lightbox.go(1); }
+      }
+    });
   }
 
   /* ---------- In-page anchors ---------- */
@@ -233,8 +495,12 @@
   function boot() {
     renderContent();                              // before anything measures or animates
     initLenis();
-    initNavScroll();
+    initScrollState();
     initMenu();
+    initOverlays();
+    initLightbox();
+    initBooking();
+    initKeyboard();
     initAnchors();
 
     var preloader = document.getElementById('preloader');
@@ -248,6 +514,7 @@
     lockScroll();
     anim.prepareHero();
     anim.scrollReveals();
+    anim.visitTimeline();
     anim.preloader(function () {
       unlockScroll();
       anim.heroBreathing();

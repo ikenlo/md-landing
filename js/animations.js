@@ -74,7 +74,16 @@
       start: 'top 88%',
       once: true,
       onEnter: function (batch) {
-        gsap.to(batch, {
+        // A jump (anchor link, restored scroll position) can enter dozens of
+        // elements at once. Whatever is already above the viewport just
+        // appears; only what's on screen takes part in the stagger.
+        var onScreen = [];
+        batch.forEach(function (el) {
+          if (el.getBoundingClientRect().bottom < 0) gsap.set(el, { autoAlpha: 1, y: 0 });
+          else onScreen.push(el);
+        });
+
+        gsap.to(onScreen, {
           autoAlpha: 1,
           y: 0,
           duration: 1.1,
@@ -98,6 +107,87 @@
         }
       });
     });
+  }
+
+  /* ---------- Visit timeline -----------------------------------------------
+     The gold rail is an SVG path with pathLength="1", scrubbed by scroll.
+     Mobile draws the vertical rail, desktop the horizontal one; a step's dot
+     lights up once the tip of the line has passed it. */
+  function visitTimeline() {
+    var timeline = document.querySelector('.visit__timeline');
+    if (!timeline) return;
+
+    var list = timeline.querySelector('.visit__steps');
+    var steps = gsap.utils.toArray('.step', timeline);
+
+    if (reducedMotion || !window.ScrollTrigger) {
+      steps.forEach(function (step) { step.classList.add('is-active'); });
+      return;
+    }
+
+    gsap.matchMedia().add({
+      mobile: '(max-width: 63.999rem)',
+      desktop: '(min-width: 64rem)'
+    }, function (context) {
+      var desktop = context.conditions.desktop;
+      var path = timeline.querySelector((desktop ? '.visit__line--h' : '.visit__line--v') + ' .visit__progress');
+
+      function lightDots(progress) {
+        steps.forEach(function (step) {
+          var at = desktop
+            ? step.offsetLeft / list.offsetWidth
+            : step.offsetTop / list.offsetHeight;
+          step.classList.toggle('is-active', progress > at + 0.01);
+        });
+      }
+
+      gsap.fromTo(path, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0,
+        ease: 'none',
+        autoRound: false,                          // fractional offsets, or the line snaps on
+        scrollTrigger: {
+          trigger: list,
+          start: desktop ? 'top 78%' : 'top 62%',
+          end: desktop ? 'top 34%' : 'bottom 62%',
+          scrub: 0.5,
+          onUpdate: function (self) { lightDots(self.progress); },
+          onRefresh: function (self) { lightDots(self.progress); }
+        }
+      });
+    });
+  }
+
+  /* ---------- Lightbox slide -----------------------------------------------
+     Current photo leaves in the swipe direction, `swap` changes the source,
+     the next one arrives from the opposite side. dir: 1 = next, -1 = prev. */
+  var slideTl = null;
+
+  function lightboxSlide(img, dir, swap) {
+    if (slideTl) slideTl.progress(1);              // finish an in-flight slide first
+
+    if (reducedMotion) {
+      swap();
+      gsap.set(img, { x: 0, autoAlpha: 1 });
+      return;
+    }
+
+    slideTl = gsap.timeline({ onComplete: function () { slideTl = null; } })
+      .to(img, { x: -dir * 120, autoAlpha: 0, duration: 0.22, ease: 'power2.in' })
+      .add(swap)
+      .fromTo(img,
+        { x: dir * 120, autoAlpha: 0 },
+        { x: 0, autoAlpha: 1, duration: 0.5, ease: 'expo.out', immediateRender: false });
+  }
+
+  // Finger-follow while dragging, and the snap back when a swipe is abandoned.
+  function lightboxDrag(img, x) {
+    if (slideTl) return;
+    gsap.set(img, { x: x, autoAlpha: 1 - Math.min(Math.abs(x) / 600, 0.4) });
+  }
+
+  function lightboxReset(img, instant) {
+    if (slideTl) { slideTl.progress(1); }
+    gsap.to(img, { x: 0, autoAlpha: 1, duration: instant ? 0 : 0.4, ease: 'expo.out', overwrite: true });
   }
 
   /* ---------- Preloader ----------------------------------------------------
@@ -131,7 +221,9 @@
       return gsap.to(el, { autoAlpha: 0, duration: 0.3, delay: 0.5, ease: 'none', onComplete: done });
     }
 
-    var tl = gsap.timeline();
+    // autoRound off: GSAP otherwise snaps px values to whole numbers, and a
+    // dashoffset that can only be 1 or 0 pops in instead of drawing.
+    var tl = gsap.timeline({ defaults: { autoRound: false } });
 
     // — draw: exactly DRAW seconds end to end
     tl.to(ring, { strokeDashoffset: 0, duration: DRAW, ease: 'power2.inOut' }, 0)
@@ -177,6 +269,10 @@
     preloader: preloader,
     menu: menu,
     heroBreathing: heroBreathing,
-    scrollReveals: scrollReveals
+    scrollReveals: scrollReveals,
+    visitTimeline: visitTimeline,
+    lightboxSlide: lightboxSlide,
+    lightboxDrag: lightboxDrag,
+    lightboxReset: lightboxReset
   };
 })();
