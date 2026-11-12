@@ -2,8 +2,8 @@
    M&D — main.js
    App logic: content binding, smooth scroll, preloader boot, sticky nav,
    mobile menu, floating CTA, gallery lightbox and the booking form mockup.
-   Copy comes from content.js (window.MD.content), timelines from
-   animations.js (window.MD.animations).
+   Copy comes from content.js (window.MD.content) plus ui-text.js
+   (window.MD.ui, bound under "ui."); timelines from animations.js.
    ========================================================================== */
 (function () {
   'use strict';
@@ -14,7 +14,10 @@
   var DESKTOP = window.matchMedia('(min-width: 64rem)');
 
   var anim = (window.MD && window.MD.animations) || { available: false };
-  var content = (window.MD && window.MD.content) || {};
+  var MD = window.MD || {};
+  var ui = MD.ui || {};
+  // One lookup root: business copy at the top level, interface strings under "ui".
+  var content = Object.assign({}, MD.content || {}, { ui: ui });
   var root = document.documentElement;
   var nav = document.getElementById('nav');
   var burger = document.getElementById('navBurger');
@@ -72,24 +75,32 @@
     }
   }
 
-  function renderContent() {
-    // Lists first: stamp the <template> once per item, bound to that item…
-    document.querySelectorAll('[data-list]').forEach(function (list) {
-      var items = lookup(content, list.getAttribute('data-list'));
-      var tpl = list.querySelector('template');
+  // Stamp each [data-list] <template> once per item. Recurses into the clone,
+  // so a template may hold its own list (categories → items).
+  function renderLists(scope, ctx) {
+    scope.querySelectorAll('[data-list]').forEach(function (list) {
+      if (!list.hasAttribute('data-list')) return;  // already stamped by an outer pass
+      var path = list.getAttribute('data-list');
+      var items = lookup(ctx, path);
+      var tpl = list.querySelector(':scope > template');
+      list.removeAttribute('data-list');
       if (!tpl || !Array.isArray(items)) {
-        console.warn('[content] bad list:', list.getAttribute('data-list'));
+        console.warn('[content] bad list:', path);
         return;
       }
       items.forEach(function (item, i) {
         var node = tpl.content.cloneNode(true);
+        renderLists(node, item);
         bind(node, item, i);
         list.appendChild(node);
       });
     });
+  }
 
-    // …then everything else against the root.
-    bind(document, content);
+  function renderContent() {
+    if (!MD.content) console.warn('[content] content.js did not load');
+    renderLists(document, content);
+    bind(document, content);                       // everything outside lists
   }
 
   /* ---------- Scroll lock ---------- */
@@ -166,7 +177,7 @@
   function setMenuState(open) {
     menuOpen = open;
     burger.setAttribute('aria-expanded', String(open));
-    var labels = content.a11y || {};
+    var labels = ui.a11y || {};
     burger.setAttribute('aria-label', open ? labels.menuClose : labels.menuOpen);
     nav.classList.toggle('is-menu-open', open);
     setPageInert(open);                           // focus stays in header + menu

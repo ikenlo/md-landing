@@ -29,12 +29,13 @@
 </head>
 <body>
 
-  <!-- All visible copy is injected from js/content.js via data-t / data-list -->
+  <!-- All visible copy is injected from js/content.js (business copy) and
+       js/ui-text.js (interface strings, "ui." prefix) via data-t / data-list -->
 
-  <a class="skip-link" href="#main" data-t="a11y.skip"></a>
+  <a class="skip-link" href="#main" data-t="ui.a11y.skip"></a>
 
   <!-- ============ PRELOADER ============ -->
-  <div class="preloader" id="preloader" role="status" data-t-attr="aria-label:a11y.loading">
+  <div class="preloader" id="preloader" role="status" data-t-attr="aria-label:ui.a11y.loading">
     <div class="preloader__inner">
       <svg class="monogram" viewBox="0 0 200 200" fill="none" aria-hidden="true" focusable="false">
         <circle class="monogram__ring" cx="100" cy="100" r="94" pathLength="1" transform="rotate(-90 100 100)"/>
@@ -42,27 +43,29 @@
         <path class="monogram__amp" pathLength="1" transform="translate(2.5 0)" d="M112 118 L96.5 96.5 C92.5 91 94.5 84 100 84 C105.5 84 107 90.5 102.5 94 L95 99.5 C87.5 105 89 116.5 98.5 117.5 C105 118 109.5 112.5 111 104.5"/>
         <path class="monogram__letter" pathLength="1" d="M124 66 V134 H138 C159 134 172 120 172 100 C172 80 159 66 138 66 H124"/>
       </svg>
-      <p class="preloader__caption" data-t="brand.tagline"></p>
+      <p class="preloader__caption" data-t="ui.brand.tagline"></p>
     </div>
   </div>
 
   <!-- ============ NAVIGATION ============ -->
   <header class="nav" id="nav">
     <div class="nav__inner">
-      <a class="nav__logo" href="#top" data-t-attr="aria-label:a11y.logo">
+      <a class="nav__logo" href="#top" data-t-attr="aria-label:ui.a11y.logo">
         M<span class="nav__logo-amp">&amp;</span>D
       </a>
 
       <!-- Desktop enhancement: inline links + CTA -->
-      <nav class="nav__links" data-list="nav.links" data-t-attr="aria-label:a11y.navMain">
-        <template>
-          <a class="nav__link" data-t="label" data-t-attr="href:href"></a>
-        </template>
+      <nav class="nav__links" data-t-attr="aria-label:ui.a11y.navMain">
+        <a class="nav__link" href="#about" data-t="nav.about"></a>
+        <a class="nav__link" href="#services" data-t="nav.services"></a>
+        <a class="nav__link" href="#gallery" data-t="nav.gallery"></a>
+        <a class="nav__link" href="#visit" data-t="nav.visit"></a>
+        <a class="nav__link" href="#contacts" data-t="nav.contacts"></a>
       </nav>
       <button class="btn btn--gold nav__cta" type="button" data-open-booking data-t="nav.cta"></button>
 
       <button class="nav__burger" id="navBurger" type="button"
-              aria-expanded="false" aria-controls="menu" data-t-attr="aria-label:a11y.menuOpen">
+              aria-expanded="false" aria-controls="menu" data-t-attr="aria-label:ui.a11y.menuOpen">
         <span class="nav__burger-line"></span>
         <span class="nav__burger-line"></span>
       </button>
@@ -72,14 +75,14 @@
   <!-- ============ MOBILE MENU ============
        Lives outside <header>: backdrop-filter on the nav would otherwise
        become the containing block for this fixed overlay. -->
-  <div class="menu" id="menu" role="dialog" aria-modal="true" data-t-attr="aria-label:a11y.menu" inert>
-    <nav class="menu__nav" data-lenis-prevent data-t-attr="aria-label:a11y.navMobile">
-      <ul class="menu__list" data-list="nav.links">
-        <template>
-          <li class="menu__item">
-            <a class="menu__link" data-t-attr="href:href"><span class="menu__link-inner" data-t="label"></span></a>
-          </li>
-        </template>
+  <div class="menu" id="menu" role="dialog" aria-modal="true" data-t-attr="aria-label:ui.a11y.menu" inert>
+    <nav class="menu__nav" data-lenis-prevent data-t-attr="aria-label:ui.a11y.navMobile">
+      <ul class="menu__list">
+        <li class="menu__item"><a class="menu__link" href="#about"><span class="menu__link-inner" data-t="nav.about"></span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#services"><span class="menu__link-inner" data-t="nav.services"></span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#gallery"><span class="menu__link-inner" data-t="nav.gallery"></span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#visit"><span class="menu__link-inner" data-t="nav.visit"></span></a></li>
+        <li class="menu__item"><a class="menu__link" href="#contacts"><span class="menu__link-inner" data-t="nav.contacts"></span></a></li>
       </ul>
     </nav>
     <div class="menu__footer">
@@ -112,7 +115,10 @@
           </svg>
         </h1>
         <p class="hero__subhead" data-hero-fade data-t="hero.subhead"></p>
-        <button class="btn btn--gold hero__cta" type="button" data-open-booking data-hero-fade data-t="hero.cta"></button>
+        <div class="hero__actions" data-hero-fade>
+          <button class="btn btn--gold hero__cta" type="button" data-open-booking data-t="hero.cta"></button>
+          <a class="btn btn--ghost" href="#about" data-t="hero.secondary"></a>
+        </div>
       </div>
 
       <div class="hero__scroll" aria-hidden="true" data-hero-fade>
@@ -124,17 +130,16 @@
     <section class="section about" id="about">
       <div class="container about__grid">
         <div class="about__text">
-          <p class="eyebrow" data-reveal data-t="about.eyebrow"></p>
+          <p class="eyebrow" data-reveal data-t="ui.eyebrow.about"></p>
           <h2 class="section__title" data-reveal data-t="about.title"></h2>
-          <div class="about__body" data-list="about.paragraphs">
-            <template>
-              <p data-reveal data-t="."></p>
-            </template>
+          <div class="about__body">
+            <p data-reveal data-t="about.p1"></p>
+            <p data-reveal data-t="about.p2"></p>
           </div>
         </div>
         <figure class="about__media" data-reveal>
           <img class="about__img" src="assets/img/about.jpg" width="1200" height="1500"
-               loading="lazy" decoding="async" data-parallax data-t-attr="alt:about.imageAlt">
+               loading="lazy" decoding="async" data-parallax data-t-attr="alt:ui.about.imageAlt">
         </figure>
       </div>
     </section>
@@ -143,7 +148,7 @@
     <section class="section section--alt principles" id="principles">
       <div class="container">
         <header class="section__head">
-          <p class="eyebrow" data-reveal data-t="principles.eyebrow"></p>
+          <p class="eyebrow" data-reveal data-t="ui.eyebrow.principles"></p>
           <h2 class="section__title" data-reveal data-t="principles.title"></h2>
         </header>
         <ol class="principles__list" data-list="principles.items">
@@ -151,7 +156,7 @@
             <li class="principle" data-reveal>
               <span class="principle__num" aria-hidden="true" data-index></span>
               <h3 class="principle__title" data-t="title"></h3>
-              <p class="principle__text" data-t="text"></p>
+              <p class="principle__text" data-t="desc"></p>
             </li>
           </template>
         </ol>
@@ -162,10 +167,10 @@
     <section class="section services" id="services">
       <div class="container">
         <header class="section__head">
-          <p class="eyebrow" data-reveal data-t="services.eyebrow"></p>
+          <p class="eyebrow" data-reveal data-t="ui.eyebrow.services"></p>
           <h2 class="section__title" data-reveal data-t="services.title"></h2>
         </header>
-        <ul class="services__grid" data-list="services.items">
+        <ul class="services__grid" data-list="services.categories">
           <template>
             <li class="service" data-reveal>
               <span class="service__num" aria-hidden="true" data-index></span>
@@ -180,10 +185,10 @@
     <section class="section section--alt gallery" id="gallery">
       <div class="container">
         <header class="section__head">
-          <p class="eyebrow" data-reveal data-t="gallery.eyebrow"></p>
+          <p class="eyebrow" data-reveal data-t="ui.eyebrow.gallery"></p>
           <h2 class="section__title" data-reveal data-t="gallery.title"></h2>
         </header>
-        <ul class="gallery__grid" data-list="gallery.items">
+        <ul class="gallery__grid" data-list="gallery.images">
           <template>
             <li data-reveal>
               <button class="gallery__item" type="button">
@@ -200,7 +205,7 @@
     <section class="section visit" id="visit">
       <div class="container">
         <header class="section__head">
-          <p class="eyebrow" data-reveal data-t="visit.eyebrow"></p>
+          <p class="eyebrow" data-reveal data-t="ui.eyebrow.visit"></p>
           <h2 class="section__title" data-reveal data-t="visit.title"></h2>
         </header>
         <div class="visit__timeline">
@@ -219,9 +224,9 @@
               <li class="step">
                 <span class="step__dot" aria-hidden="true"></span>
                 <div data-reveal>
-                  <span class="step__num" aria-hidden="true" data-index></span>
+                  <span class="step__num" aria-hidden="true" data-t="num"></span>
                   <h3 class="step__title" data-t="title"></h3>
-                  <p class="step__text" data-t="text"></p>
+                  <p class="step__text" data-t="desc"></p>
                 </div>
               </li>
             </template>
@@ -233,29 +238,46 @@
     <!-- CTA & CONTACTS -->
     <section class="section contacts" id="contacts">
       <div class="container">
-        <p class="eyebrow" data-reveal data-t="contacts.eyebrow"></p>
-        <h2 class="contacts__title" data-reveal data-t="contacts.title"></h2>
-        <p class="contacts__lead" data-reveal data-t="contacts.lead"></p>
+        <p class="eyebrow" data-reveal data-t="ui.eyebrow.contacts"></p>
+        <h2 class="contacts__title" data-reveal data-t="cta.title"></h2>
+        <p class="contacts__lead" data-reveal data-t="cta.subhead"></p>
         <div data-reveal>
-          <button class="btn btn--gold contacts__cta" type="button" data-open-booking data-t="contacts.cta"></button>
+          <button class="btn btn--gold contacts__cta" type="button" data-open-booking data-t="nav.cta"></button>
         </div>
 
-        <ul class="contacts__rows">
+        <div class="contacts__info">
+          <h3 class="contacts__city" data-reveal data-t="contacts.title"></h3>
+          <ul class="contacts__rows">
           <li data-reveal>
-            <a class="contact-row" data-t-attr="href:contacts.phone.href">
-              <span class="contact-row__label" data-t="contacts.phone.label"></span>
-              <span class="contact-row__value" data-t="contacts.phone.value"></span>
+            <a class="contact-row" data-t-attr="href:contacts.phoneLink">
+              <span class="contact-row__label" data-t="ui.contacts.phone"></span>
+              <span class="contact-row__value" data-t="contacts.phone"></span>
               <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
             </a>
           </li>
           <li data-reveal>
-            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.address.href">
-              <span class="contact-row__label" data-t="contacts.address.label"></span>
-              <span class="contact-row__value" data-t="contacts.address.value"></span>
+            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.addressLink">
+              <span class="contact-row__label" data-t="ui.contacts.address"></span>
+              <span class="contact-row__value" data-t="contacts.address"></span>
               <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
             </a>
           </li>
-        </ul>
+          <li data-reveal>
+            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.instagramLink">
+              <span class="contact-row__label" data-t="ui.contacts.instagram"></span>
+              <span class="contact-row__value" data-t="contacts.instagram"></span>
+              <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+          </li>
+          <li data-reveal>
+            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.telegramLink">
+              <span class="contact-row__label" data-t="ui.contacts.telegram"></span>
+              <span class="contact-row__value" data-t="contacts.telegram"></span>
+              <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+          </li>
+          </ul>
+        </div>
       </div>
     </section>
 
@@ -263,7 +285,8 @@
 
   <footer class="footer" id="footer">
     <div class="container">
-      <p class="footer__copy" data-t="footer.copy"></p>
+      <p class="footer__tagline" data-t="footer.tagline"></p>
+      <p class="footer__copy" data-t="footer.copyright"></p>
     </div>
   </footer>
 
@@ -272,10 +295,10 @@
 
   <!-- ============ LIGHTBOX ============ -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" tabindex="-1" inert
-       data-t-attr="aria-label:a11y.lightbox">
+       data-t-attr="aria-label:ui.a11y.lightbox">
     <div class="lightbox__bar">
       <p class="lightbox__counter" aria-live="polite"></p>
-      <button class="icon-btn" type="button" data-close-overlay data-t-attr="aria-label:a11y.close">
+      <button class="icon-btn" type="button" data-close-overlay data-t-attr="aria-label:ui.a11y.close">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
       </button>
     </div>
@@ -283,10 +306,10 @@
       <img class="lightbox__img" alt="" draggable="false">
     </div>
     <div class="lightbox__nav">
-      <button class="icon-btn icon-btn--ring lightbox__prev" type="button" data-t-attr="aria-label:a11y.prevPhoto">
+      <button class="icon-btn icon-btn--ring lightbox__prev" type="button" data-t-attr="aria-label:ui.a11y.prevPhoto">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
       </button>
-      <button class="icon-btn icon-btn--ring lightbox__next" type="button" data-t-attr="aria-label:a11y.nextPhoto">
+      <button class="icon-btn icon-btn--ring lightbox__next" type="button" data-t-attr="aria-label:ui.a11y.nextPhoto">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
       </button>
     </div>
@@ -296,40 +319,43 @@
   <div class="modal" id="booking" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" inert>
     <div class="modal__backdrop" data-close-overlay></div>
     <div class="modal__panel" tabindex="-1" data-lenis-prevent>
-      <button class="icon-btn modal__close" type="button" data-close-overlay data-t-attr="aria-label:a11y.close">
+      <button class="icon-btn modal__close" type="button" data-close-overlay data-t-attr="aria-label:ui.a11y.close">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
       </button>
 
       <div class="booking__form-view">
-        <p class="eyebrow" data-t="booking.eyebrow"></p>
-        <h2 class="modal__title" id="bookingTitle" data-t="booking.title"></h2>
-        <p class="modal__lead" data-t="booking.lead"></p>
+        <p class="eyebrow" data-t="ui.form.eyebrow"></p>
+        <h2 class="modal__title" id="bookingTitle" data-t="form.title"></h2>
 
         <form class="form" id="bookingForm" novalidate>
           <div class="field">
-            <label class="field__label" for="bookingName" data-t="booking.name.label"></label>
+            <label class="field__label" for="bookingName" data-t="form.nameLabel"></label>
             <input class="field__control" id="bookingName" name="name" type="text" autocomplete="name"
-                   aria-describedby="bookingNameError" data-t-attr="placeholder:booking.name.placeholder">
-            <p class="field__error" id="bookingNameError" data-t="booking.name.error"></p>
+                   aria-describedby="bookingNameError" data-t-attr="placeholder:ui.form.namePlaceholder">
+            <p class="field__error" id="bookingNameError" data-t="ui.form.nameError"></p>
           </div>
           <div class="field">
-            <label class="field__label" for="bookingPhone" data-t="booking.phone.label"></label>
+            <label class="field__label" for="bookingPhone" data-t="form.phoneLabel"></label>
             <input class="field__control" id="bookingPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
-                   aria-describedby="bookingPhoneError" data-t-attr="placeholder:booking.phone.placeholder">
-            <p class="field__error" id="bookingPhoneError" data-t="booking.phone.error"></p>
+                   aria-describedby="bookingPhoneError" data-t-attr="placeholder:ui.form.phonePlaceholder">
+            <p class="field__error" id="bookingPhoneError" data-t="ui.form.phoneError"></p>
           </div>
           <div class="field">
-            <label class="field__label" for="bookingService" data-t="booking.service.label"></label>
+            <label class="field__label" for="bookingService" data-t="form.serviceLabel"></label>
             <select class="field__control field__control--select" id="bookingService" name="service"
-                    aria-describedby="bookingServiceError" data-list="services.items">
-              <option value="" selected data-t="booking.service.placeholder"></option>
+                    aria-describedby="bookingServiceError" data-list="services.categories">
+              <option value="" selected data-t="ui.form.servicePlaceholder"></option>
               <template>
-                <option data-t="name" data-t-attr="value:name"></option>
+                <optgroup data-t-attr="label:name" data-list="items">
+                  <template>
+                    <option data-t="name" data-t-attr="value:name"></option>
+                  </template>
+                </optgroup>
               </template>
             </select>
-            <p class="field__error" id="bookingServiceError" data-t="booking.service.error"></p>
+            <p class="field__error" id="bookingServiceError" data-t="ui.form.serviceError"></p>
           </div>
-          <button class="btn btn--gold btn--block" type="submit" data-t="booking.submit"></button>
+          <button class="btn btn--gold btn--block" type="submit" data-t="form.submit"></button>
         </form>
       </div>
 
@@ -337,9 +363,8 @@
         <svg class="booking__check" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
           <circle cx="24" cy="24" r="23"/><path d="M15 24.5l6.5 6.5L34 18"/>
         </svg>
-        <h2 class="modal__title" data-t="booking.success.title"></h2>
-        <p class="modal__lead" data-t="booking.success.text"></p>
-        <button class="btn btn--gold btn--block" type="button" data-close-overlay data-t="booking.success.button"></button>
+        <p class="booking__success-text" data-t="form.success"></p>
+        <button class="btn btn--gold btn--block" type="button" data-close-overlay data-t="ui.form.done"></button>
       </div>
     </div>
   </div>
@@ -348,7 +373,14 @@
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
-  <script defer src="js/content.js"></script>
+  <script defer src="js/ui-text.js"></script>
+  <!-- content.js is an ES module (export const CONTENT). Module scripts are
+       deferred and run in document order, so CONTENT is on window.MD before
+       animations.js / main.js execute. Needs http(s): file:// blocks modules. -->
+  <script type="module">
+    import { CONTENT } from './js/content.js';
+    (window.MD = window.MD || {}).content = CONTENT;
+  </script>
   <script defer src="js/animations.js"></script>
   <script defer src="js/main.js"></script>
 </body>
