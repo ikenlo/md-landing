@@ -29,15 +29,15 @@
 :root {
   /* Colour — exact brand palette */
   --green-900: #051C15;
-  --green-800: #0A2A20;
-  --green-700: #113A2E;
+  --green-800: #0A2E24;                   /* emerald-teal, per the brand mockup */
+  --green-700: #124437;                   /* teal accent: cards, sections */
   --gold-500: #C8A97E;
   --gold-400: #D9BD96;
   --neutral-100: #F4EFE6;
 
   /* Channel triplets for translucent surfaces */
   --green-900-rgb: 5 28 21;
-  --green-800-rgb: 10 42 32;
+  --green-800-rgb: 10 46 36;
   --gold-500-rgb: 200 169 126;
   --neutral-100-rgb: 244 239 230;
 
@@ -2010,7 +2010,7 @@ em {
   margin-top: var(--sp-2);
   font-size: 0.6875rem;                   /* 11px */
   line-height: 1.4;
-  color: rgb(var(--neutral-100-rgb) / 0.5);
+  color: rgb(var(--neutral-100-rgb) / 0.62);  /* ≥4.5:1 on green-800 at 11px */
 }
 
 /* --- Dialogs on larger screens --- */
