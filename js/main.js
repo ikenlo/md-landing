@@ -1,7 +1,8 @@
 /* ==========================================================================
    M&D — main.js
    App logic: content binding, smooth scroll, preloader boot, sticky nav,
-   mobile menu, floating CTA, gallery lightbox and the booking form mockup.
+   mobile menu, floating CTA and gallery lightbox. Booking happens in the
+   Telegram bot: every "Записатися" is a plain link, no form on this page.
    Copy comes from content.js (window.MD.content) plus ui-text.js
    (window.MD.ui, bound under "ui."); timelines from animations.js.
    ========================================================================== */
@@ -223,6 +224,12 @@
       if (menuOpen) closeMenu(); else openMenu();
     });
 
+    // The menu's CTA opens Telegram in a new tab; close the menu so the page
+    // is in a normal state when the visitor comes back.
+    menu.querySelector('.menu__cta').addEventListener('click', function () {
+      closeMenu({ instant: true });
+    });
+
     // Crossing into the desktop layout with the menu open: reset cleanly.
     var onBreakpoint = function (e) {
       if (e.matches) closeMenu({ instant: true });
@@ -231,7 +238,7 @@
     else DESKTOP.addListener(onBreakpoint);
   }
 
-  /* ---------- Overlays (lightbox, booking modal) -----------------------------
+  /* ---------- Overlays (lightbox) ---------------------------------------------
      One at a time. Opening locks scroll, makes the page behind inert and moves
      focus in; closing puts focus back on whatever opened it. */
   var activeOverlay = null;
@@ -372,88 +379,6 @@
     lightbox = { el: el, go: go };
   }
 
-  /* ---------- Booking form (MOCKUP) -------------------------------------------
-     Every [data-open-booking] button opens the modal. Submitting validates and
-     logs the data — nothing is sent anywhere yet. */
-  function initBooking() {
-    var modal = document.getElementById('booking');
-    var form = document.getElementById('bookingForm');
-    if (!modal || !form) return;
-
-    var panel = modal.querySelector('.modal__panel');
-    var formView = modal.querySelector('.booking__form-view');
-    var success = modal.querySelector('.booking__success');
-
-    var rules = {
-      name: function (v) { return v.length >= 2; },
-      phone: function (v) { return v.replace(/\D/g, '').length >= 10; },
-      service: function (v) { return v !== ''; }
-    };
-
-    function control(key) {
-      return form.elements.namedItem(key);
-    }
-
-    function setValidity(input, ok) {
-      input.closest('.field').classList.toggle('is-invalid', !ok);
-      if (ok) input.removeAttribute('aria-invalid');
-      else input.setAttribute('aria-invalid', 'true');
-    }
-
-    function resetForm() {
-      form.reset();
-      Object.keys(rules).forEach(function (key) { setValidity(control(key), true); });
-    }
-
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest || !e.target.closest('[data-open-booking]')) return;
-      formView.hidden = false;
-      success.hidden = true;
-      panel.scrollTop = 0;
-      // Focus the panel, not the first field: no keyboard popping up uninvited.
-      openOverlay(modal, panel);
-    });
-
-    // Clear an error as soon as the field becomes valid.
-    ['input', 'change'].forEach(function (type) {
-      form.addEventListener(type, function (e) {
-        var rule = rules[e.target.name];
-        if (rule && e.target.closest('.field').classList.contains('is-invalid')) {
-          setValidity(e.target, rule(e.target.value.trim()));
-        }
-      });
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      var name = control('name').value.trim();
-      var phone = control('phone').value.trim();
-      var service = control('service').value;
-      var values = { name: name, phone: phone, service: service };
-
-      var firstInvalid = null;
-      Object.keys(rules).forEach(function (key) {
-        var ok = rules[key](values[key]);
-        setValidity(control(key), ok);
-        if (!ok && !firstInvalid) firstInvalid = control(key);
-      });
-      if (firstInvalid) {
-        firstInvalid.focus();
-        return;
-      }
-
-      // TODO(backend): send the request. For now the mockup only logs it.
-      console.log('Booking data:', { name: name, phone: phone, service: service });
-
-      resetForm();
-      formView.hidden = true;
-      success.hidden = false;
-      panel.scrollTop = 0;
-      success.focus({ preventScroll: true });
-    });
-  }
-
   /* ---------- Keyboard ---------- */
   function initKeyboard() {
     document.addEventListener('keydown', function (e) {
@@ -510,7 +435,6 @@
     initMenu();
     initOverlays();
     initLightbox();
-    initBooking();
     initKeyboard();
     initAnchors();
 

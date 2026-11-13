@@ -1,7 +1,7 @@
 /* ==========================================================================
    M&D — ui-text.js
    Interface strings that content.js doesn't carry: accessibility labels,
-   section eyebrows, form placeholders and validation messages, row labels.
+   section eyebrows, contact row labels.
    Business copy (services, prices, contacts…) lives in content.js only.
 
    Bound under the "ui." prefix, e.g. data-t="ui.a11y.close".
@@ -28,7 +28,9 @@
       close: 'Закрити',
       lightbox: 'Перегляд фото',
       prevPhoto: 'Попереднє фото',
-      nextPhoto: 'Наступне фото'
+      nextPhoto: 'Наступне фото',
+      // Accessible name for every "Записатися" link (starts with the visible text)
+      bookTelegram: 'Записатися через Telegram (відкривається в новій вкладці)'
     },
 
     eyebrow: {
@@ -49,17 +51,6 @@
       address: 'Адреса',
       instagram: 'Instagram',
       telegram: 'Telegram'
-    },
-
-    form: {
-      eyebrow: 'Онлайн-запис',
-      namePlaceholder: 'Як до вас звертатися',
-      phonePlaceholder: '+380',
-      servicePlaceholder: 'Оберіть послугу',
-      nameError: 'Вкажіть, будь ласка, ім’я',
-      phoneError: 'Вкажіть номер телефону повністю',
-      serviceError: 'Оберіть послугу',
-      done: 'Гаразд'
     }
   };
 })();

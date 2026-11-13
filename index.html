@@ -62,7 +62,7 @@
         <a class="nav__link" href="#visit" data-t="nav.visit"></a>
         <a class="nav__link" href="#contacts" data-t="nav.contacts"></a>
       </nav>
-      <button class="btn btn--gold nav__cta" type="button" data-open-booking data-t="nav.cta"></button>
+      <a class="btn btn--gold nav__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
 
       <button class="nav__burger" id="navBurger" type="button"
               aria-expanded="false" aria-controls="menu" data-t-attr="aria-label:ui.a11y.menuOpen">
@@ -86,7 +86,7 @@
       </ul>
     </nav>
     <div class="menu__footer">
-      <button class="btn btn--gold btn--block menu__cta" type="button" data-open-booking data-t="nav.cta"></button>
+      <a class="btn btn--gold btn--block menu__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
     </div>
   </div>
 
@@ -116,7 +116,7 @@
         </h1>
         <p class="hero__subhead" data-hero-fade data-t="hero.subhead"></p>
         <div class="hero__actions" data-hero-fade>
-          <button class="btn btn--gold hero__cta" type="button" data-open-booking data-t="hero.cta"></button>
+          <a class="btn btn--gold hero__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="hero.cta"></a>
           <a class="btn btn--ghost" href="#about" data-t="hero.secondary"></a>
         </div>
       </div>
@@ -254,7 +254,7 @@
         <h2 class="contacts__title" data-reveal data-t="cta.title"></h2>
         <p class="contacts__lead" data-reveal data-t="cta.subhead"></p>
         <div data-reveal>
-          <button class="btn btn--gold contacts__cta" type="button" data-open-booking data-t="nav.cta"></button>
+          <a class="btn btn--gold contacts__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
         </div>
 
         <div class="contacts__info">
@@ -268,21 +268,21 @@
             </a>
           </li>
           <li data-reveal>
-            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.addressLink">
+            <a class="contact-row" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.addressLink">
               <span class="contact-row__label" data-t="ui.contacts.address"></span>
               <span class="contact-row__value" data-t="contacts.address"></span>
               <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
             </a>
           </li>
           <li data-reveal>
-            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.instagramLink">
+            <a class="contact-row" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.instagramLink">
               <span class="contact-row__label" data-t="ui.contacts.instagram"></span>
               <span class="contact-row__value" data-t="contacts.instagram"></span>
               <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
             </a>
           </li>
           <li data-reveal>
-            <a class="contact-row" target="_blank" rel="noopener" data-t-attr="href:contacts.telegramLink">
+            <a class="contact-row" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink">
               <span class="contact-row__label" data-t="ui.contacts.telegram"></span>
               <span class="contact-row__value" data-t="contacts.telegram"></span>
               <svg class="contact-row__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -302,8 +302,10 @@
     </div>
   </footer>
 
-  <!-- ============ FLOATING CTA (mobile only) ============ -->
-  <button class="fab btn btn--gold" id="fab" type="button" data-open-booking data-t="nav.cta"></button>
+  <!-- ============ FLOATING CTA (mobile only) ============
+       Every "Записатися" is a plain link to the Telegram bot: booking happens
+       there, the landing page collects no data. -->
+  <a class="fab btn btn--gold" id="fab" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
 
   <!-- ============ LIGHTBOX ============ -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" tabindex="-1" inert
@@ -324,60 +326,6 @@
       <button class="icon-btn icon-btn--ring lightbox__next" type="button" data-t-attr="aria-label:ui.a11y.nextPhoto">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
       </button>
-    </div>
-  </div>
-
-  <!-- ============ BOOKING MODAL (mockup — no backend yet) ============ -->
-  <div class="modal" id="booking" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" inert>
-    <div class="modal__backdrop" data-close-overlay></div>
-    <div class="modal__panel" tabindex="-1" data-lenis-prevent>
-      <button class="icon-btn modal__close" type="button" data-close-overlay data-t-attr="aria-label:ui.a11y.close">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
-      </button>
-
-      <div class="booking__form-view">
-        <p class="eyebrow" data-t="ui.form.eyebrow"></p>
-        <h2 class="modal__title" id="bookingTitle" data-t="form.title"></h2>
-
-        <form class="form" id="bookingForm" novalidate>
-          <div class="field">
-            <label class="field__label" for="bookingName" data-t="form.nameLabel"></label>
-            <input class="field__control" id="bookingName" name="name" type="text" autocomplete="name"
-                   aria-describedby="bookingNameError" data-t-attr="placeholder:ui.form.namePlaceholder">
-            <p class="field__error" id="bookingNameError" data-t="ui.form.nameError"></p>
-          </div>
-          <div class="field">
-            <label class="field__label" for="bookingPhone" data-t="form.phoneLabel"></label>
-            <input class="field__control" id="bookingPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
-                   aria-describedby="bookingPhoneError" data-t-attr="placeholder:ui.form.phonePlaceholder">
-            <p class="field__error" id="bookingPhoneError" data-t="ui.form.phoneError"></p>
-          </div>
-          <div class="field">
-            <label class="field__label" for="bookingService" data-t="form.serviceLabel"></label>
-            <select class="field__control field__control--select" id="bookingService" name="service"
-                    aria-describedby="bookingServiceError" data-list="services.categories">
-              <option value="" selected data-t="ui.form.servicePlaceholder"></option>
-              <template>
-                <optgroup data-t-attr="label:name" data-list="items">
-                  <template>
-                    <option data-t="name" data-t-attr="value:name"></option>
-                  </template>
-                </optgroup>
-              </template>
-            </select>
-            <p class="field__error" id="bookingServiceError" data-t="ui.form.serviceError"></p>
-          </div>
-          <button class="btn btn--gold btn--block" type="submit" data-t="form.submit"></button>
-        </form>
-      </div>
-
-      <div class="booking__success" hidden tabindex="-1">
-        <svg class="booking__check" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
-          <circle cx="24" cy="24" r="23"/><path d="M15 24.5l6.5 6.5L34 18"/>
-        </svg>
-        <p class="booking__success-text" data-t="form.success"></p>
-        <button class="btn btn--gold btn--block" type="button" data-close-overlay data-t="ui.form.done"></button>
-      </div>
     </div>
   </div>
 

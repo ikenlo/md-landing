@@ -78,14 +78,14 @@ export const CONTENT = {
   },
   cta: {
     title: "Готові до змін?",
-    subhead: "Запишіться у зручний час — через Telegram-бот."
+    subhead: "Натисніть, щоб перейти до нашого Telegram-бота та обрати зручний час."
   },
   contacts: {
     title: "Нові Петрівці",
     phone: "+380 68 123 4503",
     phoneLink: "tel:+380681234503",
     address: "провулок Першого Травня, 20",
-    addressLink: "https://maps.google.com/?q=Нові+Петрівці,+провулок+Першого+Травня,+20",
+    addressLink: "https://maps.google.com/?q=Київська+область,+Нові+Петрівці,+провулок+Першого+Травня,+20",
     instagram: "@hairstudio.md",
     instagramLink: "https://www.instagram.com/hairstudio.md",
     telegram: "@Mdstudioobot",
@@ -94,13 +94,5 @@ export const CONTENT = {
   footer: {
     copyright: "© 2027 ФОП Варченко Маргарита Сергіївна",
     tagline: "Студія краси у Нових Петрівцях"
-  },
-  form: {
-    title: "Записатися",
-    nameLabel: "Ваше ім'я",
-    phoneLabel: "Номер телефону",
-    serviceLabel: "Яка послуга вас цікавить?",
-    submit: "Відправити заявку",
-    success: "Дякуємо! Вашу заявку прийнято. Ми зв'яжемося з вами найближчим часом."
   }
 };
