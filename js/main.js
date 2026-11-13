@@ -179,6 +179,7 @@
 
   function setMenuState(open) {
     menuOpen = open;
+    syncOverlayFlag();
     burger.setAttribute('aria-expanded', String(open));
     var labels = ui.a11y || {};
     burger.setAttribute('aria-label', open ? labels.menuClose : labels.menuOpen);
@@ -241,6 +242,11 @@
   var activeOverlay = null;
   var returnFocus = null;
 
+  // html.has-overlay hides the floating buttons while any layer is up (CSS 17).
+  function syncOverlayFlag() {
+    root.classList.toggle('has-overlay', !!activeOverlay || menuOpen);
+  }
+
   function openOverlay(el, focusTarget) {
     if (activeOverlay === el) return;
 
@@ -262,6 +268,7 @@
     }
 
     activeOverlay = el;
+    syncOverlayFlag();
     el.inert = false;
     el.classList.add('is-open');
     setPageInert(true);
@@ -275,6 +282,7 @@
 
     var el = activeOverlay;
     activeOverlay = null;
+    syncOverlayFlag();
     el.classList.remove('is-open');
     el.inert = true;
     setPageInert(false);

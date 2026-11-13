@@ -92,6 +92,8 @@
   --nav-h: 4.5rem;          /* 72px */
   --nav-h-scrolled: 4rem;   /* 64px */
   --tap: 3rem;              /* 48px minimum tap target */
+  --fab-size: 3.5rem;       /* 56px: both floating buttons share one height */
+  --fab-inset: var(--sp-4); /* distance from the screen edges */
 
   /* Shape */
   --radius-pill: 999px;
@@ -1139,7 +1141,9 @@ em {
 }
 
 .footer {
-  padding-block: var(--sp-5) calc(var(--sp-5) + env(safe-area-inset-bottom));
+  /* bottom padding clears the fixed chat button (16 + 56px), so the last
+     line of the page is never hidden under it */
+  padding-block: var(--sp-5) calc(var(--sp-4) + 3.5rem + var(--sp-5) + env(safe-area-inset-bottom));
   background: var(--green-900);
 }
 
@@ -1156,13 +1160,19 @@ em {
   color: rgb(var(--neutral-100-rgb) / 0.5);
 }
 
-/* 17. FLOATING CTA — mobile only, bottom-right thumb zone
+/* 17. FLOATING BUTTONS
+   Booking CTA: bottom-right, mobile only, after 600px.
+   AI chat:     bottom-left, every breakpoint (styles in 18, next to the chat).
+   Same height, same edge distance, both lifted by the iPhone home-indicator
+   inset and pushed in by the landscape notch insets. At 320px they keep a
+   ~70px gap between them.
    ========================================================================== */
 .fab {
   position: fixed;
-  right: max(var(--sp-4), env(safe-area-inset-right));
-  bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
+  right: max(var(--fab-inset), env(safe-area-inset-right));
+  bottom: calc(var(--fab-inset) + env(safe-area-inset-bottom));
   z-index: var(--z-fab);
+  min-height: var(--fab-size);
   padding-inline: var(--sp-5);
   box-shadow: 0 10px 30px rgb(0 0 0 / 0.38), 0 0 0 1px rgb(var(--green-900-rgb) / 0.2);
   opacity: 0;
@@ -1184,6 +1194,28 @@ em {
 
 .fab.is-visible:active {
   transform: scale(0.97);
+}
+
+/* Narrow phones (≤ 359px): a little less padding, so the pill never crowds the chat button */
+@media (max-width: 22.4375rem) {
+  .fab {
+    padding-inline: var(--sp-4);
+    letter-spacing: 0.1em;
+  }
+}
+
+/* While any layer is up (dialog, lightbox, mobile menu) both floating
+   buttons step aside: they'd otherwise peek through the backdrop. They come
+   back on close; the booking CTA still obeys its 600px scroll rule. */
+html.has-overlay .fab,
+html.has-overlay .chat-fab {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(1rem);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out),
+    visibility 0s linear var(--dur-fast);
 }
 
 /* 18. OVERLAYS
@@ -1291,20 +1323,24 @@ em {
 /* --- Floating AI-chat button: bottom-left, every breakpoint --- */
 .chat-fab {
   position: fixed;
-  left: max(var(--sp-4), env(safe-area-inset-left));
-  bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
+  left: max(var(--fab-inset), env(safe-area-inset-left));
+  bottom: calc(var(--fab-inset) + env(safe-area-inset-bottom));
   z-index: var(--z-fab);
   display: grid;
   place-items: center;
-  width: 3.5rem;                          /* 56px */
-  height: 3.5rem;
+  width: var(--fab-size);
+  height: var(--fab-size);
   border: 1px solid rgb(var(--gold-500-rgb) / 0.55);
   border-radius: 50%;
   background: var(--green-800);
   color: var(--gold-500);
   box-shadow: 0 10px 30px rgb(0 0 0 / 0.38);
   touch-action: manipulation;
-  transition: border-color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+  transition:
+    border-color var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out),
+    opacity var(--dur) var(--ease-out),
+    visibility 0s linear 0s;
 }
 
 .chat-fab svg {
@@ -2075,7 +2111,7 @@ em {
     align-items: flex-end;
     justify-content: flex-start;
     padding: var(--sp-5);
-    padding-bottom: calc(var(--sp-5) + 3.5rem + var(--sp-3));
+    padding-bottom: calc(var(--fab-inset) + var(--fab-size) + var(--sp-3));
   }
 
   .dialog--chat .dialog__backdrop {
