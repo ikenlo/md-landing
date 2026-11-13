@@ -402,7 +402,7 @@ em {
   overflow: visible;
 }
 
-.logo-mark__path {
+.logo-path {
   fill: var(--gold-500);
   fill-opacity: 1;
   stroke: var(--gold-400);
@@ -416,7 +416,7 @@ em {
      with missing strokes whenever it's scaled up. */
 }
 
-.logo-mark__path[data-placeholder] {
+.logo-path[data-placeholder] {
   fill: none;
 }
 
@@ -437,7 +437,7 @@ em {
   width: min(64vw, 15rem);
 }
 
-.preloader .logo-mark__path {
+.preloader .logo-path {
   stroke-dashoffset: 1;
   fill-opacity: 0;
 }

@@ -199,7 +199,7 @@
   /* ---------- Calligraphy logo ----------------------------------------------
      Markup contract (index.html, preloader + hero):
        <div data-logo>
-         <svg> <path class="logo-mark__path" d="…"/> … </svg>
+         <svg> <path class="logo-path" d="…"/> … </svg>   (any number of paths)
          <span data-logo-wordmark>Beauty Salon</span>
        </div>
      Paths draw one after another in DOM order, each for a time proportional
@@ -211,8 +211,11 @@
      Placeholder paths carry data-placeholder: they're open strokes, so they
      skip the fill step (filling an open curve would draw a blob). Real logo
      outlines are closed shapes and get the full stroke → fill sequence. */
+  // Every <path class="logo-path"> inside this logo, in DOM order — that order
+  // is the drawing sequence (e.g. swirl → M → D). Scoped to the container so
+  // the preloader and hero copies animate independently.
   function logoPaths(logo) {
-    return Array.prototype.slice.call(logo.querySelectorAll('.logo-mark__path'));
+    return gsap.utils.toArray('.logo-path', logo);
   }
 
   function resetLogo(logo) {

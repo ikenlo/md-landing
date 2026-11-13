@@ -48,18 +48,15 @@
   <div class="preloader" id="preloader" role="status" data-t-attr="aria-label:ui.a11y.loading">
     <div class="preloader__inner logo logo--preloader" data-logo>
       <svg class="logo-mark" viewBox="0 0 312 152" aria-hidden="true" focusable="false">
-          <!-- REPLACE THE PLACEHOLDER SVG PATHS WITH THE REAL LOGO PATHS -->
-          <!-- How: paste each outline as <path class="logo-mark__path" d="…"/>,
-               in the order the pen should draw them (entry swash first), drop
-               data-placeholder, and set viewBox to the logo's own. Keep the
-               same paths in the preloader and the hero. animations.js does
-               the rest: stroke-dashoffset 100% → 0%, then ink fill, then
-               the wordmark. -->
-          <path class="logo-mark__path" data-placeholder d="M6 118 C 30 128 70 120 96 96 C 122 72 118 40 96 40 C 72 40 62 70 84 88 C 102 102 124 92 128 64 L 128 132"/>
-          <path class="logo-mark__path" data-placeholder d="M128 64 L 156 114 L 186 48 L 184 130"/>
-          <path class="logo-mark__path" data-placeholder d="M200 50 C 254 46 284 72 282 98 C 280 124 248 136 206 130 L 204 54"/>
-          <path class="logo-mark__path" data-placeholder d="M150 146 C 196 124 252 66 306 14"/>
-          <path class="logo-mark__path" d="M148 146 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 Z"/>
+          <!-- PASTE REAL LOGO SVG PATHS HERE. The GSAP animation will automatically target <path class="logo-path"> -->
+          <!-- • One <path class="logo-path" d="…"/> per stroke: swirl, M, D…, in the
+                 order the pen should draw them (the animation follows DOM order).
+               • Set this <svg>'s viewBox to the logo's own (copy it from the source file).
+               • Paste the same paths in the preloader AND the hero.
+               • The single path below is a test placeholder: delete it. Its
+                 data-placeholder attribute keeps it unfilled because it is an open line;
+                 real outline paths must NOT have it, so they get the ink fill. -->
+          <path class="logo-path" data-placeholder d="M6 118 C 30 128 70 120 96 96 C 122 72 118 40 96 40 C 72 40 62 70 84 88 C 102 102 124 92 128 64 L 128 132 M128 64 L 156 114 L 186 48 L 184 130 M200 50 C 254 46 284 72 282 98 C 280 124 248 136 206 130 L 204 54 M150 146 C 196 124 252 66 306 14"/>
       </svg>
       <span class="logo__wordmark" data-logo-wordmark data-t="brand.wordmark"></span>
     </div>
@@ -128,18 +125,15 @@
         <h1 class="hero__title logo logo--hero" data-logo>
           <span class="visually-hidden" data-t="hero.title"></span>
           <svg class="logo-mark" viewBox="0 0 312 152" aria-hidden="true" focusable="false">
-          <!-- REPLACE THE PLACEHOLDER SVG PATHS WITH THE REAL LOGO PATHS -->
-          <!-- How: paste each outline as <path class="logo-mark__path" d="…"/>,
-               in the order the pen should draw them (entry swash first), drop
-               data-placeholder, and set viewBox to the logo's own. Keep the
-               same paths in the preloader and the hero. animations.js does
-               the rest: stroke-dashoffset 100% → 0%, then ink fill, then
-               the wordmark. -->
-          <path class="logo-mark__path" data-placeholder d="M6 118 C 30 128 70 120 96 96 C 122 72 118 40 96 40 C 72 40 62 70 84 88 C 102 102 124 92 128 64 L 128 132"/>
-          <path class="logo-mark__path" data-placeholder d="M128 64 L 156 114 L 186 48 L 184 130"/>
-          <path class="logo-mark__path" data-placeholder d="M200 50 C 254 46 284 72 282 98 C 280 124 248 136 206 130 L 204 54"/>
-          <path class="logo-mark__path" data-placeholder d="M150 146 C 196 124 252 66 306 14"/>
-          <path class="logo-mark__path" d="M148 146 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 Z"/>
+          <!-- PASTE REAL LOGO SVG PATHS HERE. The GSAP animation will automatically target <path class="logo-path"> -->
+          <!-- • One <path class="logo-path" d="…"/> per stroke: swirl, M, D…, in the
+                 order the pen should draw them (the animation follows DOM order).
+               • Set this <svg>'s viewBox to the logo's own (copy it from the source file).
+               • Paste the same paths in the preloader AND the hero.
+               • The single path below is a test placeholder: delete it. Its
+                 data-placeholder attribute keeps it unfilled because it is an open line;
+                 real outline paths must NOT have it, so they get the ink fill. -->
+          <path class="logo-path" data-placeholder d="M6 118 C 30 128 70 120 96 96 C 122 72 118 40 96 40 C 72 40 62 70 84 88 C 102 102 124 92 128 64 L 128 132 M128 64 L 156 114 L 186 48 L 184 130 M200 50 C 254 46 284 72 282 98 C 280 124 248 136 206 130 L 204 54 M150 146 C 196 124 252 66 306 14"/>
           </svg>
           <span class="logo__wordmark" data-logo-wordmark data-t="brand.wordmark"></span>
         </h1>
