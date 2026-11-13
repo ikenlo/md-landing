@@ -180,14 +180,15 @@
   }
 
   // Finger-follow while dragging, and the snap back when a swipe is abandoned.
+  // Reduced motion: the photo stays put under the finger; the swipe still navigates.
   function lightboxDrag(img, x) {
-    if (slideTl) return;
+    if (slideTl || reducedMotion) return;
     gsap.set(img, { x: x, autoAlpha: 1 - Math.min(Math.abs(x) / 600, 0.4) });
   }
 
   function lightboxReset(img, instant) {
     if (slideTl) { slideTl.progress(1); }
-    gsap.to(img, { x: 0, autoAlpha: 1, duration: instant ? 0 : 0.4, ease: 'expo.out', overwrite: true });
+    gsap.to(img, { x: 0, autoAlpha: 1, duration: instant || reducedMotion ? 0 : 0.4, ease: 'expo.out', overwrite: true });
   }
 
   /* ---------- Preloader ----------------------------------------------------

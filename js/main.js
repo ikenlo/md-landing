@@ -442,7 +442,9 @@
 
     if (!anim.available) {
       // GSAP didn't load (offline / blocked CDN): CSS fade, page stays usable.
+      // The visit rail is drawn by CSS default, so light every step to match.
       if (preloader) preloader.classList.add('is-done');
+      document.querySelectorAll('.step').forEach(function (step) { step.classList.add('is-active'); });
       return;
     }
 
