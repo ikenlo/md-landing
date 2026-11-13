@@ -1,8 +1,8 @@
 /* ==========================================================================
    M&D — main.js
    App logic: content binding, smooth scroll, preloader boot, sticky nav,
-   mobile menu, floating CTA and gallery lightbox. Booking happens in the
-   Telegram bot: every "Записатися" is a plain link, no form on this page.
+   mobile menu, floating CTA, gallery lightbox and the overlay manager that
+   the booking / service / chat widgets (widgets.js) open through.
    Copy comes from content.js (window.MD.content) plus ui-text.js
    (window.MD.ui, bound under "ui."); timelines from animations.js.
    ========================================================================== */
@@ -26,11 +26,13 @@
   var main = document.getElementById('main');
   var footer = document.getElementById('footer');
   var fab = document.getElementById('fab');
+  var chatFab = document.getElementById('chatFab');
   var lenis = null;
 
   /* ---------- Content binding (content.js → DOM) ---------- */
   function lookup(ctx, path) {
     if (path === '.') return ctx;
+    if (path.indexOf('ui.') === 0) ctx = content;  // interface strings resolve from the root, even inside lists
     return path.split('.').reduce(function (obj, key) {
       return obj == null ? undefined : obj[key];
     }, ctx);
@@ -166,7 +168,7 @@
 
   // Everything behind a full-screen layer leaves the tab order and the a11y tree.
   function setPageInert(on) {
-    [main, footer, fab].forEach(function (el) {
+    [main, footer, fab, chatFab].forEach(function (el) {
       if (el) el.inert = on;
     });
   }
@@ -224,12 +226,6 @@
       if (menuOpen) closeMenu(); else openMenu();
     });
 
-    // The menu's CTA opens Telegram in a new tab; close the menu so the page
-    // is in a normal state when the visitor comes back.
-    menu.querySelector('.menu__cta').addEventListener('click', function () {
-      closeMenu({ instant: true });
-    });
-
     // Crossing into the desktop layout with the menu open: reset cleanly.
     var onBreakpoint = function (e) {
       if (e.matches) closeMenu({ instant: true });
@@ -238,18 +234,30 @@
     else DESKTOP.addListener(onBreakpoint);
   }
 
-  /* ---------- Overlays (lightbox) ---------------------------------------------
-     One at a time. Opening locks scroll, makes the page behind inert and moves
-     focus in; closing puts focus back on whatever opened it. */
+  /* ---------- Overlays (lightbox, booking, service sheet, chat) ---------------
+     Exactly one at a time: opening a new one closes the current one (and the
+     mobile menu). Opening locks scroll, makes the page behind inert and moves
+     focus in; closing puts focus back on whatever opened the first layer. */
   var activeOverlay = null;
   var returnFocus = null;
 
   function openOverlay(el, focusTarget) {
-    if (activeOverlay) return;
+    if (activeOverlay === el) return;
 
-    returnFocus = document.activeElement;
+    if (activeOverlay) {
+      // Swap layers (e.g. service sheet → booking): keep the original opener
+      // as the focus return point, and keep the scroll lock balanced.
+      var previous = activeOverlay;
+      activeOverlay = null;
+      previous.classList.remove('is-open');
+      previous.inert = true;
+      unlockScroll();
+    } else {
+      returnFocus = document.activeElement;
+    }
+
     if (menuOpen) {
-      closeMenu();
+      closeMenu({ instant: true });
       returnFocus = burger;                       // the menu button that was tapped is gone
     }
 
@@ -435,6 +443,7 @@
     initMenu();
     initOverlays();
     initLightbox();
+    if (MD.widgets) MD.widgets.init({ overlay: { open: openOverlay, close: closeOverlay }, content: content });
     initKeyboard();
     initAnchors();
 

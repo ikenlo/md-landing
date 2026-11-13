@@ -46,14 +46,22 @@
 
   <!-- ============ PRELOADER ============ -->
   <div class="preloader" id="preloader" role="status" data-t-attr="aria-label:ui.a11y.loading">
-    <div class="preloader__inner">
-      <svg class="monogram" viewBox="0 0 200 200" fill="none" aria-hidden="true" focusable="false">
-        <circle class="monogram__ring" cx="100" cy="100" r="94" pathLength="1" transform="rotate(-90 100 100)"/>
-        <path class="monogram__letter" pathLength="1" d="M30 134 V66 L56 110 L82 66 V134"/>
-        <path class="monogram__amp" pathLength="1" transform="translate(2.5 0)" d="M112 118 L96.5 96.5 C92.5 91 94.5 84 100 84 C105.5 84 107 90.5 102.5 94 L95 99.5 C87.5 105 89 116.5 98.5 117.5 C105 118 109.5 112.5 111 104.5"/>
-        <path class="monogram__letter" pathLength="1" d="M124 66 V134 H138 C159 134 172 120 172 100 C172 80 159 66 138 66 H124"/>
+    <div class="preloader__inner logo logo--preloader" data-logo>
+      <svg class="logo-mark" viewBox="0 0 312 152" aria-hidden="true" focusable="false">
+          <!-- REPLACE THE PLACEHOLDER SVG PATHS WITH THE REAL LOGO PATHS -->
+          <!-- How: paste each outline as <path class="logo-mark__path" d="…"/>,
+               in the order the pen should draw them (entry swash first), drop
+               data-placeholder, and set viewBox to the logo's own. Keep the
+               same paths in the preloader and the hero. animations.js does
+               the rest: stroke-dashoffset 100% → 0%, then ink fill, then
+               the wordmark. -->
+          <path class="logo-mark__path" data-placeholder d="M6 118 C 30 128 70 120 96 96 C 122 72 118 40 96 40 C 72 40 62 70 84 88 C 102 102 124 92 128 64 L 128 132"/>
+          <path class="logo-mark__path" data-placeholder d="M128 64 L 156 114 L 186 48 L 184 130"/>
+          <path class="logo-mark__path" data-placeholder d="M200 50 C 254 46 284 72 282 98 C 280 124 248 136 206 130 L 204 54"/>
+          <path class="logo-mark__path" data-placeholder d="M150 146 C 196 124 252 66 306 14"/>
+          <path class="logo-mark__path" d="M148 146 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 Z"/>
       </svg>
-      <p class="preloader__caption" data-t="ui.brand.tagline"></p>
+      <span class="logo__wordmark" data-logo-wordmark data-t="brand.wordmark"></span>
     </div>
   </div>
 
@@ -72,7 +80,7 @@
         <a class="nav__link" href="#visit" data-t="nav.visit"></a>
         <a class="nav__link" href="#contacts" data-t="nav.contacts"></a>
       </nav>
-      <a class="btn btn--gold nav__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
+      <button class="btn btn--gold nav__cta" type="button" aria-haspopup="dialog" data-open-booking data-t="nav.cta"></button>
 
       <button class="nav__burger" id="navBurger" type="button"
               aria-expanded="false" aria-controls="menu" data-t-attr="aria-label:ui.a11y.menuOpen">
@@ -96,7 +104,7 @@
       </ul>
     </nav>
     <div class="menu__footer">
-      <a class="btn btn--gold btn--block menu__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
+      <button class="btn btn--gold btn--block menu__cta" type="button" aria-haspopup="dialog" data-open-booking data-t="nav.cta"></button>
     </div>
   </div>
 
@@ -116,17 +124,28 @@
 
       <div class="hero__content container">
         <p class="eyebrow" data-hero-fade data-t="hero.eyebrow"></p>
-        <h1 class="hero__title" data-hero-fade>
+        <!-- h1 reads "M&D Beauty Salon": hidden name + visible wordmark; the SVG is decorative -->
+        <h1 class="hero__title logo logo--hero" data-logo>
           <span class="visually-hidden" data-t="hero.title"></span>
-          <svg class="hero__logo" viewBox="24 60 154 80" fill="none" aria-hidden="true" focusable="false">
-            <path class="hero__logo-letter" d="M30 134 V66 L56 110 L82 66 V134"/>
-            <path class="hero__logo-amp" transform="translate(2.5 0)" d="M112 118 L96.5 96.5 C92.5 91 94.5 84 100 84 C105.5 84 107 90.5 102.5 94 L95 99.5 C87.5 105 89 116.5 98.5 117.5 C105 118 109.5 112.5 111 104.5"/>
-            <path class="hero__logo-letter" d="M124 66 V134 H138 C159 134 172 120 172 100 C172 80 159 66 138 66 H124"/>
+          <svg class="logo-mark" viewBox="0 0 312 152" aria-hidden="true" focusable="false">
+          <!-- REPLACE THE PLACEHOLDER SVG PATHS WITH THE REAL LOGO PATHS -->
+          <!-- How: paste each outline as <path class="logo-mark__path" d="…"/>,
+               in the order the pen should draw them (entry swash first), drop
+               data-placeholder, and set viewBox to the logo's own. Keep the
+               same paths in the preloader and the hero. animations.js does
+               the rest: stroke-dashoffset 100% → 0%, then ink fill, then
+               the wordmark. -->
+          <path class="logo-mark__path" data-placeholder d="M6 118 C 30 128 70 120 96 96 C 122 72 118 40 96 40 C 72 40 62 70 84 88 C 102 102 124 92 128 64 L 128 132"/>
+          <path class="logo-mark__path" data-placeholder d="M128 64 L 156 114 L 186 48 L 184 130"/>
+          <path class="logo-mark__path" data-placeholder d="M200 50 C 254 46 284 72 282 98 C 280 124 248 136 206 130 L 204 54"/>
+          <path class="logo-mark__path" data-placeholder d="M150 146 C 196 124 252 66 306 14"/>
+          <path class="logo-mark__path" d="M148 146 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 Z"/>
           </svg>
+          <span class="logo__wordmark" data-logo-wordmark data-t="brand.wordmark"></span>
         </h1>
         <p class="hero__subhead" data-hero-fade data-t="hero.subhead"></p>
         <div class="hero__actions" data-hero-fade>
-          <a class="btn btn--gold hero__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="hero.cta"></a>
+          <button class="btn btn--gold hero__cta" type="button" aria-haspopup="dialog" data-open-booking data-t="hero.cta"></button>
           <a class="btn btn--ghost" href="#about" data-t="hero.secondary"></a>
         </div>
       </div>
@@ -186,10 +205,17 @@
               <h3 class="price-cat__title" data-t="name"></h3>
               <ul class="price-cat__items" data-list="items">
                 <template>
-                  <li class="price-item">
-                    <span class="price-item__name" data-t="name"></span>
-                    <span class="visually-hidden"> — </span>
-                    <span class="price-item__price" data-t="price"></span>
+                  <li>
+                    <button class="price-item" type="button" aria-haspopup="dialog" data-t-attr="data-service:name">
+                      <span class="price-item__name" data-t="name"></span>
+                      <span class="visually-hidden"> — </span>
+                      <span class="price-item__price" data-t="price"></span>
+                      <span class="visually-hidden">. </span>
+                      <span class="price-item__more" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="none" focusable="false"><path d="M8 4v8M4 8h8"/></svg>
+                      </span>
+                      <span class="visually-hidden" data-t="ui.service.more"></span>
+                    </button>
                   </li>
                 </template>
               </ul>
@@ -264,7 +290,7 @@
         <h2 class="contacts__title" data-reveal data-t="cta.title"></h2>
         <p class="contacts__lead" data-reveal data-t="cta.subhead"></p>
         <div data-reveal>
-          <a class="btn btn--gold contacts__cta" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
+          <button class="btn btn--gold contacts__cta" type="button" aria-haspopup="dialog" data-open-booking data-t="nav.cta"></button>
         </div>
 
         <div class="contacts__info">
@@ -312,10 +338,151 @@
     </div>
   </footer>
 
-  <!-- ============ FLOATING CTA (mobile only) ============
-       Every "Записатися" is a plain link to the Telegram bot: booking happens
-       there, the landing page collects no data. -->
-  <a class="fab btn btn--gold" id="fab" target="_blank" rel="noopener noreferrer" data-t-attr="href:contacts.telegramLink;aria-label:ui.a11y.bookTelegram" data-t="nav.cta"></a>
+  <!-- ============ FLOATING BUTTONS ============
+       Right: "Записатися" (mobile only, after 600px) → booking widget.
+       Left: AI chat (MDs Manager), always available. -->
+  <button class="fab btn btn--gold" id="fab" type="button" aria-haspopup="dialog" data-open-booking data-t="nav.cta"></button>
+
+  <button class="chat-fab" id="chatFab" type="button" aria-haspopup="dialog" data-t-attr="aria-label:ui.a11y.chatOpen">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.2 3.6c-.5.4-1.3.1-1.3-.6V16h0A2.5 2.5 0 0 1 4 13.5z"/>
+      <path class="chat-fab__dots" d="M8.5 9.5h.01M12 9.5h.01M15.5 9.5h.01"/>
+    </svg>
+  </button>
+
+  <!-- ============ BOOKING WIDGET (MDs Connect) ============
+       Full-screen on phones, centred card on desktop. Data: MD.api (js/api.js). -->
+  <div class="dialog dialog--full" id="booking" role="dialog" aria-modal="true" aria-labelledby="bookingTitleSlots" inert>
+    <div class="dialog__backdrop" data-close-overlay></div>
+    <div class="dialog__panel" tabindex="-1">
+      <header class="dialog__head">
+        <div>
+          <p class="eyebrow" data-t="ui.booking.eyebrow"></p>
+          <p class="dialog__step"></p>
+        </div>
+        <button class="icon-btn dialog__close" type="button" data-close-overlay data-t-attr="aria-label:ui.a11y.close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
+        </button>
+      </header>
+
+      <div class="dialog__body" data-lenis-prevent>
+        <section class="booking__view" data-view="slots">
+          <h2 class="dialog__title" id="bookingTitleSlots" tabindex="-1" data-t="ui.booking.titleSlot"></h2>
+          <p class="booking__service" hidden></p>
+          <p class="field__label" id="bookingDateLabel" data-t="ui.booking.dateLabel"></p>
+          <div class="booking__dates" role="group" aria-labelledby="bookingDateLabel" data-lenis-prevent></div>
+          <p class="field__label" id="bookingTimeLabel" data-t="ui.booking.timeLabel"></p>
+          <div class="booking__times" role="group" aria-labelledby="bookingTimeLabel"></div>
+          <div class="booking__status" role="status" hidden></div>
+        </section>
+
+        <section class="booking__view" data-view="form" hidden>
+          <h2 class="dialog__title" id="bookingTitleForm" tabindex="-1" data-t="ui.booking.titleForm"></h2>
+          <dl class="booking__summary">
+            <div><dt data-t="ui.booking.summaryService"></dt><dd data-summary="service"></dd></div>
+            <div><dt data-t="ui.booking.summaryWhen"></dt><dd data-summary="when"></dd></div>
+          </dl>
+          <button class="link-btn booking__back" type="button" data-t="ui.booking.back"></button>
+
+          <form class="form" id="bookingForm" novalidate>
+            <div class="field">
+              <label class="field__label" for="bookingName" data-t="ui.booking.name"></label>
+              <input class="field__control" id="bookingName" name="name" type="text" autocomplete="name"
+                     aria-describedby="bookingNameError" data-t-attr="placeholder:ui.booking.namePlaceholder">
+              <p class="field__error" id="bookingNameError" data-t="ui.booking.nameError"></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="bookingPhone" data-t="ui.booking.phone"></label>
+              <input class="field__control" id="bookingPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
+                     aria-describedby="bookingPhoneError" data-t-attr="placeholder:ui.booking.phonePlaceholder">
+              <p class="field__error" id="bookingPhoneError" data-t="ui.booking.phoneError"></p>
+            </div>
+            <p class="booking__form-error" role="alert" hidden data-t="ui.booking.submitError"></p>
+          </form>
+        </section>
+
+        <section class="booking__view booking__success" data-view="success" hidden>
+          <svg class="booking__check" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
+            <circle cx="24" cy="24" r="23"/><path d="M15 24.5l6.5 6.5L34 18"/>
+          </svg>
+          <h2 class="dialog__title" id="bookingTitleSuccess" tabindex="-1" data-t="ui.booking.successTitle"></h2>
+          <p class="dialog__lead" data-t="ui.booking.successText"></p>
+        </section>
+      </div>
+
+      <footer class="dialog__foot" data-foot="form" hidden>
+        <button class="btn btn--gold btn--block" type="submit" form="bookingForm">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn__label" data-t="ui.booking.confirm"></span>
+        </button>
+      </footer>
+      <footer class="dialog__foot dialog__foot--stack" data-foot="success" hidden>
+        <a class="btn btn--ghost btn--block booking__telegram" target="_blank" rel="noopener noreferrer" data-t="ui.booking.openTelegram"></a>
+        <button class="btn btn--gold btn--block" type="button" data-close-overlay data-t="ui.booking.done"></button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============ SERVICE DETAILS — bottom sheet (phone) / card (desktop) ============ -->
+  <div class="dialog dialog--sheet" id="serviceSheet" role="dialog" aria-modal="true" aria-labelledby="serviceSheetTitle" inert>
+    <div class="dialog__backdrop" data-close-overlay></div>
+    <div class="dialog__panel" tabindex="-1">
+      <span class="dialog__grabber" aria-hidden="true"></span>
+      <header class="dialog__head">
+        <div>
+          <p class="eyebrow" data-sheet="category"></p>
+          <h2 class="dialog__title" id="serviceSheetTitle" data-sheet="name"></h2>
+        </div>
+        <button class="icon-btn dialog__close" type="button" data-close-overlay data-t-attr="aria-label:ui.a11y.close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
+        </button>
+      </header>
+      <div class="dialog__body" data-lenis-prevent>
+        <dl class="service-facts">
+          <div><dt data-t="ui.service.price"></dt><dd class="service-facts__price" data-sheet="price"></dd></div>
+          <div><dt data-t="ui.service.time"></dt><dd data-sheet="time"></dd></div>
+          <div><dt data-t="ui.service.materials"></dt><dd data-sheet="materials"></dd></div>
+        </dl>
+        <p class="service-desc" data-sheet="description"></p>
+      </div>
+      <footer class="dialog__foot">
+        <button class="btn btn--gold btn--block" type="button" aria-haspopup="dialog" data-book-service data-t="ui.service.book"></button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============ AI CHAT (MDs Manager) ============
+       Full-screen on phones, panel bottom-left on desktop. Replies: MD.api.askAssistant. -->
+  <div class="dialog dialog--chat" id="chat" role="dialog" aria-modal="true" aria-labelledby="chatTitle" inert>
+    <div class="dialog__backdrop" data-close-overlay></div>
+    <div class="dialog__panel" tabindex="-1">
+      <header class="dialog__head chat__head">
+        <span class="chat__avatar" aria-hidden="true">M<em>&amp;</em>D</span>
+        <div class="chat__heading">
+          <h2 class="chat__title" id="chatTitle" data-t="ui.chat.title"></h2>
+          <p class="chat__status"><span class="chat__status-dot" aria-hidden="true"></span><span data-t="ui.chat.status"></span></p>
+        </div>
+        <button class="icon-btn dialog__close" type="button" data-close-overlay data-t-attr="aria-label:ui.a11y.close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
+        </button>
+      </header>
+      <div class="dialog__body chat__body" data-lenis-prevent>
+        <ol class="chat__log" aria-live="polite" aria-relevant="additions"></ol>
+        <div class="chat__suggestions"></div>
+      </div>
+      <footer class="chat__foot">
+        <form class="chat__form">
+          <label class="visually-hidden" for="chatInput" data-t="ui.chat.placeholder"></label>
+          <input class="chat__input" id="chatInput" type="text" maxlength="500" autocomplete="off"
+                 enterkeyhint="send" data-t-attr="placeholder:ui.chat.placeholder">
+          <button class="chat__send" type="submit" data-t-attr="aria-label:ui.chat.send">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+        <p class="chat__disclaimer" data-t="ui.chat.disclaimer"></p>
+      </footer>
+    </div>
+  </div>
 
   <!-- ============ LIGHTBOX ============ -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" tabindex="-1" inert
@@ -351,7 +518,9 @@
     import { CONTENT } from './js/content.js';
     (window.MD = window.MD || {}).content = CONTENT;
   </script>
+  <script defer src="js/api.js"></script>
   <script defer src="js/animations.js"></script>
+  <script defer src="js/widgets.js"></script>
   <script defer src="js/main.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
    3. Base & typography
    4. Layout primitives
    5. Buttons
-   6. Preloader
+   6. Calligraphy logo + preloader
    7. Navigation
    8. Mobile menu
    9. Hero
@@ -18,8 +18,8 @@
    14. Gallery
    15. Visit timeline
    16. CTA & contacts, footer
-   17. Floating CTA
-   18. Overlays: icon buttons, lightbox
+   17. Floating buttons (booking CTA, AI chat)
+   18. Overlays: icon buttons, lightbox, dialogs, booking, service sheet, chat
    19. Desktop enhancements
    20. Reduced motion
    ========================================================================== */
@@ -104,7 +104,7 @@
   --dur-slow: 0.7s;
 
   /* Stacking */
-  --z-fab: 80;
+  --z-fab: 80;                            /* floating "Записатися" + chat button */
   --z-menu: 90;
   --z-nav: 100;
   --z-skip: 200;
@@ -383,45 +383,66 @@ em {
   gap: var(--sp-5);
 }
 
-.monogram {
-  width: 8.5rem;                          /* 136px */
-  height: 8.5rem;
+/* Calligraphy logo — shared by the preloader and the hero.
+   End state is the default (drawn, inked, wordmark visible), so the logo
+   shows even when GSAP never runs; animations.js rewinds it to draw it.
+   pathLength="1" (set by JS) makes one dash = the whole path: offset 1 hides
+   the stroke, 0 shows it. Real logo paths are closed outlines, so they get
+   filled; open placeholder strokes ([data-placeholder]) never do. */
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.logo-mark {
+  width: 100%;
+  height: auto;
   overflow: visible;
 }
 
-/* pathLength="1" normalises every shape, so one dash = the whole stroke.
-   Offset 1 hides it; animating to 0 draws it. */
-.monogram__ring,
-.monogram__letter,
-.monogram__amp {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.monogram__ring {
-  stroke: rgb(var(--gold-500-rgb) / 0.45);
-  stroke-width: 1;
-}
-
-.monogram__letter {
-  stroke: var(--neutral-100);
+.logo-mark__path {
+  fill: var(--gold-500);
+  fill-opacity: 1;
+  stroke: var(--gold-400);
   stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;                  /* gap > path: no stray round-cap dot while hidden */
+  stroke-dashoffset: 0;
+  /* No vector-effect: non-scaling-stroke here — Chrome then measures dashes
+     in screen pixels, ignores pathLength, and the drawn logo comes out
+     with missing strokes whenever it's scaled up. */
 }
 
-.monogram__amp {
-  stroke: var(--gold-500);
-  stroke-width: 1.25;
+.logo-mark__path[data-placeholder] {
+  fill: none;
 }
 
-.preloader__caption {
-  font-size: var(--fs-xs);
-  font-weight: 500;
-  letter-spacing: 0.4em;
-  text-indent: 0.4em;                     /* optically re-centre tracked text */
+.logo__wordmark {
+  margin-top: 0.9em;
+  font-family: var(--font-display);
+  font-size: 1.125rem;                    /* 18px */
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;                    /* optically re-centre tracked text */
   text-transform: uppercase;
+  white-space: nowrap;
   color: var(--gold-500);
+}
+
+/* Preloader: hidden until the pen starts (no flash of a finished logo) */
+.logo--preloader {
+  width: min(64vw, 15rem);
+}
+
+.preloader .logo-mark__path {
+  stroke-dashoffset: 1;
+  fill-opacity: 0;
+}
+
+.preloader .logo__wordmark {
   opacity: 0;
 }
 
@@ -668,31 +689,9 @@ em {
 }
 
 .hero__title {
-  width: min(62vw, 15rem);
-  margin-top: var(--sp-6);
-  line-height: 0;
-}
-
-.hero__logo {
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-.hero__logo-letter,
-.hero__logo-amp {
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.hero__logo-letter {
-  stroke: var(--neutral-100);
-  stroke-width: 1.75;
-}
-
-.hero__logo-amp {
-  stroke: var(--gold-500);
-  stroke-width: 1.5;
+  width: min(72vw, 17rem);
+  margin-top: var(--sp-5);
+  font-size: inherit;                     /* the h1 is the logo; text styles live on the wordmark */
 }
 
 .hero__subhead {
@@ -858,7 +857,16 @@ em {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  width: 100%;
+  min-height: var(--tap);                 /* each row opens its details: full-width 48px+ target */
   padding-block: var(--sp-2);
+  text-align: left;
+  touch-action: manipulation;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.price-item:active .price-item__name {
+  color: var(--gold-400);
 }
 
 .price-item__name {
@@ -881,6 +889,27 @@ em {
   margin: 0 8px;
   border-bottom: 1px dotted var(--gold-400);
   opacity: 0.55;
+}
+
+.price-item__more {
+  display: grid;
+  place-items: center;
+  flex: none;
+  align-self: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-left: var(--sp-3);
+  border: 1px solid rgb(var(--gold-500-rgb) / 0.45);
+  border-radius: 50%;
+  color: var(--gold-500);
+  transition: transform var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out);
+}
+
+.price-item__more svg {
+  width: 0.625rem;
+  height: 0.625rem;
+  stroke: currentColor;
+  stroke-width: 1.5;
 }
 
 .price-item__price {
@@ -1259,6 +1288,810 @@ em {
   padding: var(--sp-5) var(--gutter) calc(var(--sp-5) + env(safe-area-inset-bottom));
 }
 
+/* --- Floating AI-chat button: bottom-left, every breakpoint --- */
+.chat-fab {
+  position: fixed;
+  left: max(var(--sp-4), env(safe-area-inset-left));
+  bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
+  z-index: var(--z-fab);
+  display: grid;
+  place-items: center;
+  width: 3.5rem;                          /* 56px */
+  height: 3.5rem;
+  border: 1px solid rgb(var(--gold-500-rgb) / 0.55);
+  border-radius: 50%;
+  background: var(--green-800);
+  color: var(--gold-500);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.38);
+  touch-action: manipulation;
+  transition: border-color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+}
+
+.chat-fab svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chat-fab__dots {
+  stroke-width: 2.25;
+}
+
+.chat-fab:active {
+  transform: scale(0.95);
+}
+
+/* --- Dialogs: booking, service sheet, chat ---------------------------------
+   Panel = head (fixed) + body (scrolls) + foot (fixed). The close button lives
+   in the head, so it never scrolls out of reach, however long the content. */
+.dialog {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-slow);
+}
+
+.dialog.is-open {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(var(--green-900-rgb) / 0.72);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease-out);
+}
+
+.dialog.is-open .dialog__backdrop {
+  opacity: 1;
+}
+
+.dialog__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100vh;
+  max-height: 100dvh;
+  background:
+    radial-gradient(120% 40% at 50% 0%, rgb(var(--gold-500-rgb) / 0.10), transparent 70%),
+    var(--green-800);
+  transform: translateY(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.dialog.is-open .dialog__panel {
+  transform: none;
+}
+
+.dialog__panel:focus,
+.dialog__title:focus {
+  outline: none;
+}
+
+.dialog__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex: none;
+  padding:
+    calc(var(--sp-4) + env(safe-area-inset-top))
+    max(calc(var(--gutter) - 0.75rem), env(safe-area-inset-right))
+    var(--sp-3)
+    max(var(--gutter), env(safe-area-inset-left));
+}
+
+.dialog__head .eyebrow {
+  margin-top: 0.875rem;                   /* aligns with the 48px close button */
+}
+
+.dialog__close {
+  flex: none;
+}
+
+.dialog__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--sp-2) max(var(--gutter), env(safe-area-inset-right)) var(--sp-6) max(var(--gutter), env(safe-area-inset-left));
+}
+
+.dialog__foot {
+  flex: none;
+  padding: var(--sp-4) max(var(--gutter), env(safe-area-inset-right)) calc(var(--sp-4) + env(safe-area-inset-bottom)) max(var(--gutter), env(safe-area-inset-left));
+  border-top: 1px solid var(--line);
+  background: var(--green-800);
+}
+
+.dialog__foot[hidden] {
+  display: none;
+}
+
+.dialog__foot--stack {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.dialog__step {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.dialog__title {
+  font-size: var(--fs-2xl);
+  line-height: 1.08;
+}
+
+.dialog__lead {
+  margin-top: var(--sp-3);
+  color: var(--text-muted);
+}
+
+/* Full-screen variant (booking) on phones */
+.dialog--full .dialog__panel {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Bottom-sheet variant (service details) on phones */
+.dialog--sheet .dialog__panel {
+  max-height: 88vh;
+  max-height: 88dvh;
+  border-top: 1px solid var(--line);
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+
+.dialog--sheet .dialog__head {
+  padding-top: var(--sp-5);
+}
+
+.dialog__grabber {
+  position: absolute;
+  top: var(--sp-2);
+  left: 50%;
+  width: 2.5rem;
+  height: 4px;
+  margin-left: -1.25rem;
+  border-radius: 2px;
+  background: rgb(var(--neutral-100-rgb) / 0.22);
+}
+
+/* --- Shared bits --- */
+.spinner {
+  display: inline-block;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn .spinner {
+  display: none;
+  margin-right: var(--sp-3);
+}
+
+.btn.is-loading .spinner {
+  display: inline-block;
+}
+
+.btn:disabled {
+  cursor: progress;
+  opacity: 0.85;
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--gold-500);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+
+/* --- Form fields --- */
+.form {
+  display: grid;
+  gap: var(--sp-5);
+  margin-top: var(--sp-4);
+}
+
+.field {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.field__label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--gold-500);
+}
+
+.field__control {
+  width: 100%;
+  min-height: 3.5rem;                     /* 56px */
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background-color: rgb(var(--neutral-100-rgb) / 0.04);
+  color: var(--neutral-100);
+  font-size: 1rem;                        /* ≥16px: iOS won't zoom on focus */
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+
+.field__control::placeholder {
+  color: rgb(var(--neutral-100-rgb) / 0.4);
+}
+
+.field__control:focus {
+  outline: none;
+  border-color: var(--gold-500);
+  background-color: rgb(var(--neutral-100-rgb) / 0.07);
+}
+
+.field__error {
+  display: none;
+  font-size: var(--fs-sm);
+  color: var(--gold-400);
+}
+
+.field.is-invalid .field__control {
+  border-color: var(--gold-400);
+}
+
+.field.is-invalid .field__error {
+  display: block;
+}
+
+/* --- Booking widget --- */
+.booking__view[hidden] {
+  display: none;
+}
+
+.booking__view .field__label {
+  display: block;
+  margin-top: var(--sp-5);
+  margin-bottom: var(--sp-3);
+}
+
+.booking__service {
+  display: inline-flex;
+  margin-top: var(--sp-3);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid rgb(var(--gold-500-rgb) / 0.45);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  color: var(--gold-400);
+}
+
+.booking__service[hidden] {
+  display: none;
+}
+
+/* Days: one swipeable row, bleeding to the screen edges */
+.booking__dates {
+  display: flex;
+  gap: var(--sp-2);
+  margin-inline: calc(var(--gutter) * -1);
+  padding: 2px var(--gutter) var(--sp-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--gutter);   /* snap to the gutter, not the screen edge */
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.booking__dates::-webkit-scrollbar {
+  display: none;
+}
+
+.date-chip {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  flex: none;
+  width: 4.25rem;                         /* 68px */
+  min-height: 5.25rem;                    /* 84px */
+  padding: var(--sp-3) var(--sp-1);
+  border: 1px solid var(--line);
+  scroll-snap-align: start;
+  touch-action: manipulation;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.date-chip__dow,
+.date-chip__mon {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.date-chip__num {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.date-chip.is-full {
+  opacity: 0.45;
+}
+
+.date-chip[aria-pressed="true"] {
+  border-color: var(--gold-500);
+  background: var(--gold-500);
+  color: var(--green-900);
+  opacity: 1;
+}
+
+.date-chip[aria-pressed="true"] .date-chip__dow,
+.date-chip[aria-pressed="true"] .date-chip__mon {
+  color: var(--green-900);
+}
+
+/* Times: three columns of 56px targets */
+.booking__times {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+
+.booking__times:empty {
+  display: none;
+}
+
+.time-chip {
+  min-height: 3.5rem;
+  border: 1px solid var(--line);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  touch-action: manipulation;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.time-chip:active {
+  border-color: var(--gold-500);
+}
+
+.time-chip[aria-pressed="true"] {
+  border-color: var(--gold-500);
+  background: var(--gold-500);
+  color: var(--green-900);
+}
+
+.booking__status {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-5) 0;
+  color: var(--text-muted);
+}
+
+.booking__status[hidden] {
+  display: none;
+}
+
+.booking__status--loading .spinner {
+  color: var(--gold-500);
+}
+
+.booking__status--error {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.booking__status-actions {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.booking__summary {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  background: rgb(var(--neutral-100-rgb) / 0.03);
+}
+
+.booking__summary div[hidden] {
+  display: none;
+}
+
+.booking__summary dt {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--gold-500);
+}
+
+.booking__summary dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+}
+
+.booking__summary dd::first-letter {
+  text-transform: uppercase;
+}
+
+.booking__form-error {
+  color: var(--gold-400);
+}
+
+.booking__form-error[hidden] {
+  display: none;
+}
+
+.booking__success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: var(--sp-6);
+}
+
+.booking__check {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: var(--sp-5);
+  stroke: var(--gold-500);
+  stroke-width: 1.25;
+}
+
+/* --- Service details sheet --- */
+.service-facts {
+  display: grid;
+  gap: var(--sp-1);
+  margin-top: var(--sp-2);
+}
+
+.service-facts div {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: var(--sp-3);
+  padding-block: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.service-facts dt {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--gold-500);
+  padding-top: 0.2em;
+}
+
+.service-facts dd {
+  margin: 0;
+}
+
+.service-facts__price {
+  font-weight: 600;
+  color: var(--gold-500);
+}
+
+.service-desc {
+  margin-top: var(--sp-5);
+  color: var(--text-muted);
+}
+
+/* --- AI chat --- */
+.dialog--chat .dialog__panel {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.chat__head {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--sp-3);
+}
+
+.chat__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border: 1px solid rgb(var(--gold-500-rgb) / 0.55);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--neutral-100);
+}
+
+.chat__avatar em {
+  color: var(--gold-500);
+}
+
+.chat__heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat__title {
+  font-size: var(--fs-lg);
+  line-height: 1.15;
+}
+
+.chat__status {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.chat__status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #7FBF8E;                    /* "online" — the one non-brand colour, kept muted */
+  box-shadow: 0 0 0 3px rgb(127 191 142 / 0.18);
+}
+
+.chat__body {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--sp-4);
+}
+
+.chat__log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.chat__msg {
+  max-width: 85%;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.chat__msg--bot {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 1.125rem 1.125rem 1.125rem 0.25rem;
+  background: rgb(var(--neutral-100-rgb) / 0.04);
+}
+
+.chat__msg--user {
+  align-self: flex-end;
+  border-radius: 1.125rem 1.125rem 0.25rem 1.125rem;
+  background: var(--gold-500);
+  color: var(--green-900);
+}
+
+.chat__msg--error {
+  border-color: rgb(217 189 150 / 0.5);
+  color: var(--gold-400);
+}
+
+.chat__dots {
+  display: inline-flex;
+  gap: 5px;
+  padding-block: 0.4em;
+}
+
+.chat__dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold-500);
+  animation: typing 1.2s var(--ease-in-out) infinite;
+}
+
+.chat__dots span:nth-child(2) { animation-delay: 0.15s; }
+.chat__dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+.chat__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: auto;                       /* sit just above the input when the log is short */
+  padding-top: var(--sp-5);
+}
+
+.chat__suggestions[hidden] {
+  display: none;
+}
+
+.chat__suggestion {
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid rgb(var(--gold-500-rgb) / 0.45);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  text-align: left;
+  color: var(--gold-400);
+  touch-action: manipulation;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.chat__foot {
+  flex: none;
+  padding: var(--sp-3) max(var(--gutter), env(safe-area-inset-right)) calc(var(--sp-3) + env(safe-area-inset-bottom)) max(var(--gutter), env(safe-area-inset-left));
+  border-top: 1px solid var(--line);
+  background: var(--green-800);
+}
+
+.chat__form {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.chat__input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: rgb(var(--neutral-100-rgb) / 0.05);
+  color: var(--neutral-100);
+  font-size: 1rem;                        /* no iOS focus zoom */
+}
+
+.chat__input::placeholder {
+  color: rgb(var(--neutral-100-rgb) / 0.4);
+}
+
+.chat__input:focus {
+  outline: none;
+  border-color: var(--gold-500);
+}
+
+.chat__send {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  flex: none;
+  border-radius: 50%;
+  background: var(--gold-500);
+  color: var(--green-900);
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.chat__send:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.chat__send svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chat__disclaimer {
+  margin-top: var(--sp-2);
+  font-size: 0.6875rem;                   /* 11px */
+  line-height: 1.4;
+  color: rgb(var(--neutral-100-rgb) / 0.5);
+}
+
+/* --- Dialogs on larger screens --- */
+@media (min-width: 48rem) {
+  .dialog {
+    align-items: center;
+    padding: var(--sp-5);
+  }
+
+  .dialog__panel,
+  .dialog--full .dialog__panel,
+  .dialog--sheet .dialog__panel {
+    width: min(100%, 32rem);
+    height: auto;
+    max-height: min(46rem, calc(100dvh - 3rem));
+    border: 1px solid var(--line);
+    border-radius: 0;
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur) var(--ease-out);
+  }
+
+  .dialog.is-open .dialog__panel {
+    opacity: 1;
+  }
+
+  .dialog__grabber {
+    display: none;
+  }
+
+  .dialog__head {
+    padding: var(--sp-4) var(--sp-3) var(--sp-3) var(--sp-6);
+  }
+
+  .dialog__body,
+  .dialog__foot,
+  .chat__foot {
+    padding-inline: var(--sp-6);
+  }
+
+  .dialog__foot {
+    padding-bottom: var(--sp-5);
+  }
+
+  .booking__dates {
+    margin-inline: calc(var(--sp-6) * -1);
+    padding-inline: var(--sp-6);
+    scroll-padding-inline: var(--sp-6);
+  }
+
+  .booking__times {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .booking__status-actions {
+    grid-auto-flow: column;
+    justify-content: start;
+  }
+
+  /* Chat: floating panel above its button, page stays visible */
+  .dialog--chat {
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: var(--sp-5);
+    padding-bottom: calc(var(--sp-5) + 3.5rem + var(--sp-3));
+  }
+
+  .dialog--chat .dialog__backdrop {
+    background: rgb(var(--green-900-rgb) / 0.35);
+  }
+
+  .dialog--chat .dialog__panel {
+    width: 24rem;
+    height: min(38rem, calc(100dvh - 8rem));
+    max-height: none;
+    border-radius: 1rem;
+    box-shadow: 0 24px 60px rgb(0 0 0 / 0.45);
+    overflow: hidden;
+  }
+}
+
 /* 19. DESKTOP ENHANCEMENTS
    ========================================================================== */
 
@@ -1293,6 +2126,26 @@ em {
     color: var(--gold-400);
   }
 
+  .price-item:hover .price-item__name {
+    color: var(--gold-400);
+  }
+
+  .price-item:hover .price-item__more {
+    background-color: rgb(var(--gold-500-rgb) / 0.15);
+    transform: rotate(90deg);
+  }
+
+  .chat-fab:hover {
+    border-color: var(--gold-500);
+    transform: translateY(-2px);
+  }
+
+  .date-chip:hover,
+  .time-chip:hover,
+  .chat__suggestion:hover {
+    border-color: var(--gold-500);
+  }
+
   .icon-btn--ring:hover {
     border-color: var(--gold-500);
     background-color: rgb(var(--gold-500-rgb) / 0.1);
@@ -1314,7 +2167,11 @@ em {
   }
 
   .hero__title {
-    width: 19rem;
+    width: 20rem;
+  }
+
+  .logo__wordmark {
+    font-size: 1.375rem;
   }
 
   .hero__subhead {
@@ -1338,9 +2195,8 @@ em {
     font-size: var(--fs-xl);
   }
 
-  .monogram {
-    width: 10rem;
-    height: 10rem;
+  .logo--preloader {
+    width: 18rem;
   }
 }
 
@@ -1404,7 +2260,7 @@ em {
   }
 
   .hero__title {
-    width: 22rem;
+    width: 24rem;
   }
 
   .section__head {
@@ -1558,5 +2414,11 @@ em {
 
   .hero__scroll-line {
     animation: none;
+  }
+
+  /* Loading feedback is functional: keep the spinner turning, slowly */
+  .spinner {
+    animation-duration: 1.6s !important;
+    animation-iteration-count: infinite !important;
   }
 }

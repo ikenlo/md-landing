@@ -28,15 +28,20 @@
     if (!available || reducedMotion) return;
     gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 32 });
     gsap.set('#nav', { autoAlpha: 0, y: -16 });
+    var logo = document.querySelector('.hero [data-logo]');
+    if (logo) resetLogo(logo);
   }
 
-  // Staggered fade-up: eyebrow → logo → subhead → CTA → scroll hint
+  // Pen draws the logo while the copy fades up around it: eyebrow → logo
+  // (stroke → ink → wordmark) → subhead → CTA → scroll hint.
   function heroIntro() {
     var tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
     if (reducedMotion) return tl;
 
+    var logo = document.querySelector('.hero [data-logo]');
     tl.to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1.2, stagger: 0.14 })
       .to('#nav', { autoAlpha: 1, y: 0, duration: 0.8, clearProps: 'transform' }, 0.3);
+    if (logo) tl.add(drawLogo(logo, { draw: 1.6 }), 0.05);
     return tl;
   }
 
@@ -191,9 +196,66 @@
     gsap.to(img, { x: 0, autoAlpha: 1, duration: instant || reducedMotion ? 0 : 0.4, ease: 'expo.out', overwrite: true });
   }
 
+  /* ---------- Calligraphy logo ----------------------------------------------
+     Markup contract (index.html, preloader + hero):
+       <div data-logo>
+         <svg> <path class="logo-mark__path" d="…"/> … </svg>
+         <span data-logo-wordmark>Beauty Salon</span>
+       </div>
+     Paths draw one after another in DOM order, each for a time proportional
+     to its real length, so the "pen" keeps a constant speed: swirls take
+     longer than short strokes. pathLength="1" is set here, so the dash maths
+     is 0–1 (100% → 0%) whatever the path. Then the ink fills in, the outline
+     fades, and the wordmark arrives.
+
+     Placeholder paths carry data-placeholder: they're open strokes, so they
+     skip the fill step (filling an open curve would draw a blob). Real logo
+     outlines are closed shapes and get the full stroke → fill sequence. */
+  function logoPaths(logo) {
+    return Array.prototype.slice.call(logo.querySelectorAll('.logo-mark__path'));
+  }
+
+  function resetLogo(logo) {
+    var paths = logoPaths(logo);
+    paths.forEach(function (p) { p.setAttribute('pathLength', '1'); });
+    gsap.set(paths, { strokeDasharray: '1 2', strokeDashoffset: 1, fillOpacity: 0, strokeOpacity: 1 });
+    gsap.set(logo.querySelectorAll('[data-logo-wordmark]'), { autoAlpha: 0, y: 10 });
+  }
+
+  function drawLogo(logo, opts) {
+    var total = (opts && opts.draw) || 1.5;      // seconds for the whole pen stroke
+    var paths = logoPaths(logo);
+    var wordmark = logo.querySelectorAll('[data-logo-wordmark]');
+    var lengths = paths.map(function (p) {
+      try { return p.getTotalLength() || 1; } catch (e) { return 1; }
+    });
+    var sum = lengths.reduce(function (a, b) { return a + b; }, 0) || 1;
+    var filled = paths.filter(function (p) { return !p.hasAttribute('data-placeholder'); });
+
+    var tl = gsap.timeline({ defaults: { autoRound: false } });
+    var at = 0;
+    paths.forEach(function (p, i) {
+      var d = Math.max(0.12, total * lengths[i] / sum);
+      // the first stroke enters slowly from the edge; the rest flow on, overlapping slightly
+      tl.to(p, { strokeDashoffset: 0, duration: d, ease: i === 0 ? 'sine.in' : 'sine.inOut' }, at);
+      at += d * 0.92;
+    });
+
+    tl.addLabel('ink', '>-0.1');
+    if (filled.length) {
+      tl.to(filled, { fillOpacity: 1, duration: 0.6, ease: 'power1.out' }, 'ink')
+        .to(filled, { strokeOpacity: 0, duration: 0.6, ease: 'power1.out' }, 'ink+=0.2');
+    }
+    tl.fromTo(wordmark,
+      { autoAlpha: 0, y: 10, letterSpacing: '0.6em' },
+      { autoAlpha: 1, y: 0, letterSpacing: '0.32em', duration: 1, ease: 'expo.out' }, 'ink+=0.1');
+    return tl;
+  }
+
   /* ---------- Preloader ----------------------------------------------------
-     0.00–1.50s  monogram stroke-draw (ring + M, &, D overlap inside 1.5s)
-     then        short hold → curtain slides up → hero intro overlaps the exit */
+     0.00–1.50s  calligraphy logo: pen draws every stroke
+     then        ink fills, "BEAUTY SALON" fades in → curtain slides up →
+                 hero intro (which draws the hero logo) overlaps the exit */
   var DRAW = 1.5;
 
   function preloader(onComplete) {
@@ -211,30 +273,23 @@
     // The CSS failsafe is only for a page whose scripts never ran.
     el.style.animation = 'none';
 
-    var ring = el.querySelector('.monogram__ring');
-    var letters = el.querySelectorAll('.monogram__letter');
-    var amp = el.querySelector('.monogram__amp');
-    var caption = el.querySelector('.preloader__caption');
+    var logo = el.querySelector('[data-logo]');
 
     if (reducedMotion) {
-      gsap.set([ring, letters, amp], { strokeDashoffset: 0 });
-      gsap.set(caption, { opacity: 1 });
+      // finished logo, no drawing: the CSS end state
+      gsap.set(logoPaths(logo), { strokeDashoffset: 0, fillOpacity: 1 });
+      gsap.set(logo.querySelectorAll('[data-logo-wordmark]'), { autoAlpha: 1 });
       return gsap.to(el, { autoAlpha: 0, duration: 0.3, delay: 0.5, ease: 'none', onComplete: done });
     }
 
+    resetLogo(logo);
     // autoRound off: GSAP otherwise snaps px values to whole numbers, and a
     // dashoffset that can only be 1 or 0 pops in instead of drawing.
     var tl = gsap.timeline({ defaults: { autoRound: false } });
+    tl.add(drawLogo(logo, { draw: DRAW }), 0);
 
-    // — draw: exactly DRAW seconds end to end
-    tl.to(ring, { strokeDashoffset: 0, duration: DRAW, ease: 'power2.inOut' }, 0)
-      .to(letters[0], { strokeDashoffset: 0, duration: 0.95, ease: 'power2.inOut' }, 0.1)
-      .to(amp, { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 0.4)
-      .to(letters[1], { strokeDashoffset: 0, duration: 0.95, ease: 'power2.inOut' }, 0.55)
-      .to(caption, { opacity: 1, duration: 0.6, ease: 'power1.out' }, 0.9);
-
-    // — exit
-    tl.addLabel('exit', DRAW + 0.3)
+    // — exit, once the wordmark has settled
+    tl.addLabel('exit', '>-0.3')
       .to(el.querySelector('.preloader__inner'), { autoAlpha: 0, y: -24, duration: 0.5, ease: 'power2.in' }, 'exit')
       .to(el, { yPercent: -100, duration: 0.9, ease: 'expo.inOut' }, 'exit+=0.2')
       .add(heroIntro(), 'exit+=0.65')
