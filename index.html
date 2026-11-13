@@ -353,6 +353,7 @@
         <div>
           <p class="eyebrow" data-t="ui.booking.eyebrow"></p>
           <p class="dialog__step"></p>
+          <div class="dialog__progress" aria-hidden="true"><span></span><span></span></div>
         </div>
         <button class="icon-btn dialog__close" type="button" data-close-overlay data-t-attr="aria-label:ui.a11y.close">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5 5 19"/></svg>
@@ -363,9 +364,15 @@
         <section class="booking__view" data-view="slots">
           <h2 class="dialog__title" id="bookingTitleSlots" tabindex="-1" data-t="ui.booking.titleSlot"></h2>
           <p class="booking__service" hidden></p>
-          <p class="field__label" id="bookingDateLabel" data-t="ui.booking.dateLabel"></p>
+          <div class="booking__row-head">
+            <p class="field__label" id="bookingDateLabel" data-t="ui.booking.dateLabel"></p>
+            <p class="booking__month" aria-live="polite"></p>
+          </div>
           <div class="booking__dates" role="group" aria-labelledby="bookingDateLabel" data-lenis-prevent></div>
-          <p class="field__label" id="bookingTimeLabel" data-t="ui.booking.timeLabel"></p>
+          <div class="booking__row-head">
+            <p class="field__label" id="bookingTimeLabel" data-t="ui.booking.timeLabel"></p>
+            <p class="booking__legend" hidden><span class="booking__legend-swatch" aria-hidden="true">00:00</span><span data-t="ui.booking.legend"></span></p>
+          </div>
           <div class="booking__times" role="group" aria-labelledby="bookingTimeLabel"></div>
           <div class="booking__status" role="status" hidden></div>
         </section>
@@ -376,7 +383,10 @@
             <div><dt data-t="ui.booking.summaryService"></dt><dd data-summary="service"></dd></div>
             <div><dt data-t="ui.booking.summaryWhen"></dt><dd data-summary="when"></dd></div>
           </dl>
-          <button class="link-btn booking__back" type="button" data-t="ui.booking.back"></button>
+          <button class="btn btn--ghost btn--sm booking__back" type="button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg>
+            <span data-t="ui.booking.back"></span>
+          </button>
 
           <form class="form" id="bookingForm" novalidate>
             <div class="field">

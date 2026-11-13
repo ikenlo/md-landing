@@ -41,7 +41,9 @@
   }
 
   MD.api = {
-    /** → { days: [{ date: 'YYYY-MM-DD', slots: ['10:00', …] }] } */
+    /** → { days: [{ date: 'YYYY-MM-DD',
+     *               slots: [{ time: '10:00', available: true }, …] }] }
+     *  Every slot of the working day is listed; taken ones have available: false. */
     getSlots: function () {
       return request('/api/connect/slots').then(json);
     },
@@ -73,7 +75,9 @@
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
 
-  // Next 10 working days (Mon–Sat), a fixed grid with some times "taken".
+  // Next 10 working days (Mon–Sat). Each day lists the full grid; roughly a
+  // quarter of the times come back taken (available: false). Times already
+  // past today are left out entirely — they are gone, not booked.
   function mockSlots() {
     var grid = ['09:00', '10:00', '11:30', '12:30', '14:00', '15:00', '16:30', '18:00'];
     var days = [];
@@ -85,13 +89,15 @@
       var day = new Date(d.getTime() + i * 86400000);
       if (day.getDay() === 0) continue;            // Sunday: closed
       var seed = day.getDate() * 7 + day.getMonth();
-      var slots = grid.filter(function (t, k) {
+      var slots = grid.filter(function (t) {
         var minutes = +t.slice(0, 2) * 60 + +t.slice(3);
-        if (i === 0 && minutes <= nowMinutes + 60) return false;  // past or too soon today
-        return (seed + k * 3) % 4 !== 0;                          // ~¼ already booked
+        return !(i === 0 && minutes <= nowMinutes + 60);         // past or too soon today
+      }).map(function (t, k) {
+        return { time: t, available: (seed + k * 3) % 4 !== 0 };  // ~¼ already booked
       });
-      // one fully booked day, to exercise the empty state
-      if (days.length === 3) slots = [];
+      if (!slots.length) continue;                 // today, late evening: nothing left
+      // one fully booked day, to exercise that state
+      if (days.length === 3) slots.forEach(function (s) { s.available = false; });
       days.push({
         date: day.getFullYear() + '-' + pad(day.getMonth() + 1) + '-' + pad(day.getDate()),
         slots: slots

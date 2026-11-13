@@ -62,6 +62,8 @@
     var dateBox = $('.booking__dates', dialog);
     var timeBox = $('.booking__times', dialog);
     var status = $('.booking__status', dialog);
+    var monthLabel = $('.booking__month', dialog);
+    var legend = $('.booking__legend', dialog);
     var serviceChip = $('.booking__service', dialog);
     var summaryService = $('[data-summary="service"]', dialog);
     var summaryServiceRow = summaryService.closest('div');
@@ -74,7 +76,7 @@
     var loadPromise = null;
 
     var weekday = new Intl.DateTimeFormat('uk-UA', { weekday: 'short' });
-    var month = new Intl.DateTimeFormat('uk-UA', { month: 'short' });
+    var monthYear = new Intl.DateTimeFormat('uk-UA', { month: 'long', year: 'numeric' });
     var longDate = new Intl.DateTimeFormat('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' });
 
     function parseDate(iso) {
@@ -88,6 +90,7 @@
       var title = $('.dialog__title', views[view]);
       dialog.setAttribute('aria-labelledby', title.id);
       stepLabel.textContent = view === 'success' ? '' : t.step.replace('{n}', view === 'slots' ? 1 : 2);
+      panel.setAttribute('data-step', view);
       body.scrollTop = 0;
     }
 
@@ -119,18 +122,40 @@
       status.className = 'booking__status booking__status--' + kind;
     }
 
+    // Accept both the current shape ({ time, available }) and a bare "10:00".
+    function normalise(days) {
+      return (days || []).map(function (day) {
+        return {
+          date: day.date,
+          slots: (day.slots || []).map(function (sl) {
+            return typeof sl === 'string' ? { time: sl, available: true } : sl;
+          })
+        };
+      });
+    }
+
+    function freeCount(day) {
+      return day.slots.filter(function (sl) { return sl.available; }).length;
+    }
+
     function renderDays() {
       dateBox.textContent = '';
+      var active = null;
       state.days.forEach(function (day) {
         var d = parseDate(day.date);
+        var free = freeCount(day);
         var b = el('button', 'date-chip');
         b.type = 'button';
         b.setAttribute('aria-pressed', String(day.date === state.date));
-        b.setAttribute('aria-label', longDate.format(d) + (day.slots.length ? '' : ' — ' + t.noSlots));
+        b.setAttribute('aria-label', longDate.format(d) + (free ? '' : ' — ' + t.noSlots));
         b.appendChild(el('span', 'date-chip__dow', weekday.format(d)));
         b.appendChild(el('span', 'date-chip__num', String(d.getDate())));
-        b.appendChild(el('span', 'date-chip__mon', month.format(d).replace('.', '')));
-        if (!day.slots.length) b.classList.add('is-full');
+        // a gold dot = there is free time that day
+        var dot = el('span', 'date-chip__dot');
+        dot.setAttribute('aria-hidden', 'true');
+        b.appendChild(dot);
+        if (!free) b.classList.add('is-full');
+        if (day.date === state.date) active = b;
         b.addEventListener('click', function () {
           state.date = day.date;
           state.time = null;
@@ -139,23 +164,45 @@
         });
         dateBox.appendChild(b);
       });
+
+      if (state.date) monthLabel.textContent = monthYear.format(parseDate(state.date)).replace(/\s*р\.?$/, '');  // «листопад 2026», without « р.»
+      // keep the chosen day in view without jolting the page
+      if (active) {
+        var left = active.offsetLeft - (dateBox.clientWidth - active.offsetWidth) / 2;
+        dateBox.scrollTo({ left: Math.max(0, left), behavior: dateBox.dataset.ready ? 'smooth' : 'auto' });
+        dateBox.dataset.ready = '1';
+      }
     }
 
     function renderTimes() {
       timeBox.textContent = '';
       var day = state.days.filter(function (d) { return d.date === state.date; })[0];
       if (!day || !day.slots.length) {
+        legend.hidden = true;
         setStatus('empty');
         return;
       }
-      setStatus(null);
-      day.slots.forEach(function (time) {
-        var b = el('button', 'time-chip', time);
+      var free = freeCount(day);
+      setStatus(free ? null : 'empty');
+      legend.hidden = free === day.slots.length;   // only explain strikethrough when some are taken
+
+      day.slots.forEach(function (slot) {
+        var b = el('button', 'time-chip', slot.time);
         b.type = 'button';
-        b.setAttribute('aria-pressed', String(time === state.time));
+        if (!slot.available) {
+          // taken: shown so the day's rhythm is visible, but inert
+          b.disabled = true;
+          b.classList.add('is-taken');
+          b.setAttribute('aria-label', slot.time + ' — ' + t.taken);
+          timeBox.appendChild(b);
+          return;
+        }
+        b.setAttribute('aria-pressed', String(slot.time === state.time));
         b.addEventListener('click', function () {
-          state.time = time;
-          $all('.time-chip', timeBox).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+          state.time = slot.time;
+          $all('.time-chip', timeBox).forEach(function (x) {
+            if (!x.disabled) x.setAttribute('aria-pressed', String(x === b));
+          });
           // brief confirmation of the tap, then on to the form
           setTimeout(goToForm, 220);
         });
@@ -167,11 +214,12 @@
       if (loadPromise) return loadPromise;
       dateBox.textContent = '';
       timeBox.textContent = '';
+      legend.hidden = true;
       setStatus('loading');
 
       loadPromise = api.getSlots().then(function (data) {
-        state.days = (data && data.days) || [];
-        var firstOpen = state.days.filter(function (d) { return d.slots.length; })[0];
+        state.days = normalise(data && data.days);
+        var firstOpen = state.days.filter(function (d) { return freeCount(d); })[0];
         state.date = firstOpen ? firstOpen.date : (state.days[0] && state.days[0].date);
         renderDays();
         renderTimes();
@@ -416,6 +464,24 @@
     });
   }
 
+  /* ---------- shared: dialog header separates from scrolled content ---------- */
+  function initDialogScrollState() {
+    $all('.dialog').forEach(function (dialog) {
+      var panel = $('.dialog__panel', dialog);
+      var body = $('.dialog__body', dialog);
+      if (!panel || !body) return;
+      var ticking = false;
+      body.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          panel.classList.toggle('is-scrolled', body.scrollTop > 4);
+          ticking = false;
+        });
+      }, { passive: true });
+    });
+  }
+
   /* ---------- entry point (called by main.js after content is rendered) ---------- */
   MD.widgets = {
     init: function (deps) {
@@ -426,6 +492,7 @@
       overlay = deps.overlay;
       content = deps.content;
       ui = content.ui;
+      initDialogScrollState();
       initBooking();
       initServiceDetails();
       initChat();

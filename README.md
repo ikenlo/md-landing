@@ -108,7 +108,7 @@ Facebook не покажуть картинку в прев'ю посиланн�
 
 | Метод | Ендпоінт | Відповідь |
 |---|---|---|
-| `GET` | `/api/connect/slots` | `{ days: [{ date: "YYYY-MM-DD", slots: ["10:00", …] }] }` |
+| `GET` | `/api/connect/slots` | `{ days: [{ date: "YYYY-MM-DD", slots: [{ time: "10:00", available: true }, …] }] }` — усі слоти дня; зайняті з `available: false` показуються закресленими |
 | `POST` | `/api/connect/bookings` | тіло `{ date, time, name, phone, service }` → `{ id, status }` |
 | `POST` | `/api/manager/chat` | тіло `{ message, history }` → `{ reply }` |
 
